@@ -29,6 +29,10 @@ namespace Xale::Core
             ConfigurationHandler(const ConfigurationHandler&) = delete;
             ConfigurationHandler& operator=(const ConfigurationHandler&) = delete;
             bool extractStringField(const std::string& text, const std::string& key, std::string& outValue);
+            std::tm* getLocaltime();
+            std::string getLocaltimeDay();
+            std::string getLocaltimeMonth();
+            std::string getLocaltimeYear();
             std::string buildType;
             std::string defaultLogLevel;
             std::string exceptionLogLevel;

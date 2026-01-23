@@ -69,26 +69,22 @@ namespace Xale::Core
             const std::string placeholderMM = "__MM__";
             const std::string placeholderYYYY = "__YYYY__";
             size_t pos = 0;
-            const std::time_t t = std::time(0);
-            const std::tm* now = std::localtime(&t);
-            const int localtimeDD = now->tm_mday; 
-            const int localtimeMM = now->tm_mon + 1;
-            const int localtimeYYYY = now->tm_year + 1900;
+
             while ((pos = fileNameFormat.find(placeholderDD, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderDD.length(), "01");
+                fileNameFormat.replace(pos, placeholderDD.length(), getLocaltimeDay());
                 pos += 2;
             }
             pos = 0;
             while ((pos = fileNameFormat.find(placeholderMM, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderMM.length(), "01");
+                fileNameFormat.replace(pos, placeholderMM.length(), getLocaltimeMonth());
                 pos += 2;
             }
             pos = 0;
             while ((pos = fileNameFormat.find(placeholderYYYY, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderYYYY.length(), "1970");
+                fileNameFormat.replace(pos, placeholderYYYY.length(), getLocaltimeYear());
                 pos += 4;
             }
         }
@@ -156,5 +152,54 @@ namespace Xale::Core
             instance.reset(new ConfigurationHandler());
         }
         return *instance;
+    }
+
+    std::tm* ConfigurationHandler::getLocaltime()
+    {
+        std::time_t t = std::time(0);
+        std::tm* now = std::localtime(&t);
+        return now;
+    }
+
+    std::string ConfigurationHandler::getLocaltimeDay() 
+    {
+        std::tm* now = getLocaltime();
+        const int intDay = now->tm_mday;
+        std::string stringDay = std::to_string(intDay);
+
+        if (stringDay.length() == 0)
+            return "01";
+
+        if (stringDay.length() == 1)
+            stringDay.insert(0, "0");
+
+        return stringDay;
+    }
+    
+    std::string ConfigurationHandler::getLocaltimeMonth() 
+    {
+        std::tm* now = getLocaltime();
+        const int intMonth = now->tm_mon + 1;
+        std::string stringMonth = std::to_string(intMonth);
+
+        if (stringMonth.length() == 0)
+            return "01";
+
+        if (stringMonth.length() == 1)
+            stringMonth.insert(0, "0");
+
+        return stringMonth;
+    }
+
+    std::string ConfigurationHandler::getLocaltimeYear() 
+    {
+        std::tm* now = getLocaltime();
+        const int intYear = now->tm_year + 1900;
+        std::string stringYear = std::to_string(intYear);
+
+        if (stringYear.length() == 0)
+            return "1900";
+
+        return stringYear;
     }
 }
