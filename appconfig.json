@@ -1,0 +1,11 @@
+{
+    "Build": "Debug",
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Exception": "Error"
+        },
+        "OutputFilePath": "__ROOT__/../Logs/",
+        "FileNameFormat": "__DD__-__MM__-__YYYY__-xale-db.log"
+    }
+}
