@@ -1,93 +1,105 @@
 #include "Storage/FileManager.h"
 
-bool FileManager::open(const std::filesystem::path& path)
+namespace Xale::Storage
 {
-    std::lock_guard<std::mutex> lock(mtx_);
-    path_ = path;
 
-    file_.open(path_, std::ios::in | std::ios::out | std::ios::binary);
+    FileManager::~FileManager()
+    {
+        if (_file.is_open()) {
+            _file.flush();
+            _file.close();
+	    }
+    }
+
+    bool FileManager::open(const std::filesystem::path& path)
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _path = path;
+
+        _file.open(_path, std::ios::in | std::ios::out | std::ios::binary);
     
-    if (!file_.is_open()) {
-        std::ofstream create(path_, std::ios::binary);
+        if (!_file.is_open()) {
+            std::ofstream create(_path, std::ios::binary);
         
-        if (!create)
-            return false;
+            if (!create)
+                return false;
         
-        create.close();
-        file_.open(path_, std::ios::in | std::ios::out | std::ios::binary);
+            create.close();
+            _file.open(_path, std::ios::in | std::ios::out | std::ios::binary);
      
-        if (!file_.is_open())
-            return false;
+            if (!_file.is_open())
+                return false;
+        }
+
+        return true;
     }
 
-    return true;
-}
-
-void FileManager::close()
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    if (file_.is_open()) {
-        file_.flush();
-        file_.close();
+    void FileManager::close()
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        if (_file.is_open()) {
+            _file.flush();
+            _file.close();
+        }
     }
-}
 
-std::size_t FileManager::readAt(std::uint64_t offset, void* buffer, std::size_t size)
-{
-    if (!buffer || size == 0)
-        return 0;
+    std::size_t FileManager::readAt(std::uint64_t offset, void* buffer, std::size_t size)
+    {
+        if (!buffer || size == 0)
+            return 0;
 
-    std::lock_guard<std::mutex> lock(mtx_);
-    if (!file_.is_open()) return 0;
+        std::lock_guard<std::mutex> lock(_mutex);
+        if (!_file.is_open()) return 0;
 
-    file_.clear();
-    file_.seekg(static_cast<std::streamoff>(offset), std::ios::beg);
-    if (!file_) return 0;
+        _file.clear();
+        _file.seekg(static_cast<std::streamoff>(offset), std::ios::beg);
+        if (!_file) return 0;
 
-    file_.read(reinterpret_cast<char*>(buffer), static_cast<std::streamsize>(size));
-    return static_cast<std::size_t>(file_.gcount());
-}
+        _file.read(reinterpret_cast<char*>(buffer), static_cast<std::streamsize>(size));
+        return static_cast<std::size_t>(_file.gcount());
+    }
 
-std::size_t FileManager::writeAt(std::uint64_t offset, const void* buffer, std::size_t size)
-{
-    if (!buffer || size == 0) 
-        return 0;
+    std::size_t FileManager::writeAt(std::uint64_t offset, const void* buffer, std::size_t size)
+    {
+        if (!buffer || size == 0) 
+            return 0;
 
-    std::lock_guard<std::mutex> lock(mtx_);
+        std::lock_guard<std::mutex> lock(_mutex);
 
-    if (!file_.is_open()) 
-        return 0;
+        if (!_file.is_open()) 
+            return 0;
 
-    file_.clear();
-    file_.seekp(static_cast<std::streamoff>(offset), std::ios::beg);
+        _file.clear();
+        _file.seekp(static_cast<std::streamoff>(offset), std::ios::beg);
 
-    if (!file_) 
-        return 0;
+        if (!_file) 
+            return 0;
 
-    file_.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(size));
+        _file.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(size));
 
-    if (!file_) 
-        return 0;
+        if (!_file) 
+            return 0;
 
-    return size;
-}
+        return size;
+    }
 
-bool FileManager::sync()
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    if (!file_.is_open()) return false;
-    file_.flush();
-    // Platform-specific fsync could be added here for stronger durability
-    return static_cast<bool>(file_);
-}
+    bool FileManager::sync()
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        if (!_file.is_open()) return false;
+        _file.flush();
+        // Platform-specific fsync could be added here for stronger durability
+        return static_cast<bool>(_file);
+    }
 
-std::uint64_t FileManager::size() const
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    try {
-        if (path_.empty() || !std::filesystem::exists(path_)) return 0;
-        return static_cast<std::uint64_t>(std::filesystem::file_size(path_));
-    } catch (...) {
-        return 0;
+    std::uint64_t FileManager::size() const
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        try {
+            if (_path.empty() || !std::filesystem::exists(_path)) return 0;
+            return static_cast<std::uint64_t>(std::filesystem::file_size(_path));
+        } catch (...) {
+            return 0;
+        }
     }
 }

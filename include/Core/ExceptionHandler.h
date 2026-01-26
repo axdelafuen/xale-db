@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
 #include <iostream>
+#include <utility>
 
 namespace Xale::Core
 {
@@ -27,11 +28,11 @@ namespace Xale::Core
             ExceptionCode getCode() const;
 
         private:
-            ExceptionCode code;
-            std::string msg;
-            std::string fullMessage;
-            const char* file;
-            int line;
+            ExceptionCode _code;
+            std::string _msg;
+            std::string _fullMessage;
+            const char* _file;
+            int _line;
     };
 }
 

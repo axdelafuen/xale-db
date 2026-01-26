@@ -6,7 +6,7 @@ namespace Xale::Core
     bool ConfigurationHandler::loadFromFile(const std::string& path, std::string& outError) noexcept
     {
         outError.clear();
-        loaded = false;
+        _loaded = false;
 
         std::string fullPath = Xale::Core::Helper::getConfigPath(path);
 
@@ -21,25 +21,25 @@ namespace Xale::Core
         buffer << in.rdbuf();
         const std::string content = buffer.str();
 
-        if (!extractStringField(content, "Build", buildType))
+        if (!extractStringField(content, "Build", _buildType))
         {
             outError = "Missing or invalid 'Build' in config";
             return false;
         }
 
-        if (!extractStringField(content, "Default", defaultLogLevel))
+        if (!extractStringField(content, "Default", _defaultLogLevel))
         {
             outError = "Missing or invalid 'Logging.LogLevel.Default' in config";
             return false;
         }
 
-        if (!extractStringField(content, "Exception", exceptionLogLevel))
+        if (!extractStringField(content, "Exception", _exceptionLogLevel))
         {
             outError = "Missing or invalid 'Logging.LogLevel.Exception' in config";
             return false;
         }
 
-        if (!extractStringField(content, "OutputFilePath", outputFilePath))
+        if (!extractStringField(content, "OutputFilePath", _outputFilePath))
         {
             outError = "Missing or invalid 'Logging.OutputFilePath' in config";
             return false;
@@ -50,15 +50,15 @@ namespace Xale::Core
             if (!root.empty())
             {
                 size_t pos = 0;
-                while ((pos = outputFilePath.find("__ROOT__", pos)) != std::string::npos)
+                while ((pos = _outputFilePath.find("__ROOT__", pos)) != std::string::npos)
                 {
-                    outputFilePath.replace(pos, 8, root);
+                    _outputFilePath.replace(pos, 8, root);
                     pos += root.length();
                 }
             }
         }
 
-        if (!extractStringField(content, "FileNameFormat", fileNameFormat))
+        if (!extractStringField(content, "FileNameFormat", _fileNameFormat))
         {
             outError = "Missing or invalid 'Logging.FileNameFormat' in config";
             return false;
@@ -70,57 +70,57 @@ namespace Xale::Core
             const std::string placeholderYYYY = "__YYYY__";
             size_t pos = 0;
 
-            while ((pos = fileNameFormat.find(placeholderDD, pos)) != std::string::npos)
+            while ((pos = _fileNameFormat.find(placeholderDD, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderDD.length(), getLocaltimeDay());
+                _fileNameFormat.replace(pos, placeholderDD.length(), getLocaltimeDay());
                 pos += 2;
             }
             pos = 0;
-            while ((pos = fileNameFormat.find(placeholderMM, pos)) != std::string::npos)
+            while ((pos = _fileNameFormat.find(placeholderMM, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderMM.length(), getLocaltimeMonth());
+                _fileNameFormat.replace(pos, placeholderMM.length(), getLocaltimeMonth());
                 pos += 2;
             }
             pos = 0;
-            while ((pos = fileNameFormat.find(placeholderYYYY, pos)) != std::string::npos)
+            while ((pos = _fileNameFormat.find(placeholderYYYY, pos)) != std::string::npos)
             {
-                fileNameFormat.replace(pos, placeholderYYYY.length(), getLocaltimeYear());
+                _fileNameFormat.replace(pos, placeholderYYYY.length(), getLocaltimeYear());
                 pos += 4;
             }
         }
 
-        loaded = true;
+        _loaded = true;
         return true;
     }
 
     bool ConfigurationHandler::isLoaded() const noexcept
     { 
-        return loaded; 
+        return _loaded; 
     }
 
     const std::string& ConfigurationHandler::getBuildType() const noexcept 
     { 
-        return buildType;
+        return _buildType;
     }
 
     const std::string& ConfigurationHandler::getDefaultLogLevel() const noexcept 
     { 
-        return defaultLogLevel;
+        return _defaultLogLevel;
     }
 
     const std::string& ConfigurationHandler::getExceptionLogLevel() const noexcept 
     { 
-        return exceptionLogLevel; 
+        return _exceptionLogLevel; 
     }
 
     const std::string& ConfigurationHandler::getLogOutputDirectory() const noexcept 
     { 
-        return outputFilePath; 
+        return _outputFilePath; 
     }
 
     const std::string& ConfigurationHandler::getLogFileNameFormat() const noexcept 
     { 
-        return fileNameFormat; 
+        return _fileNameFormat; 
     }
 
     bool ConfigurationHandler::extractStringField(const std::string& text, const std::string& key, std::string& outValue)
