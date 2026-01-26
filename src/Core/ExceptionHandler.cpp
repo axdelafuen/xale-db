@@ -6,21 +6,21 @@ namespace Xale::Core
 		ExceptionCode code,
 		std::string msg, 
 		const char* file, 
-		int line):  code(code), 
-					msg(std::move(msg)), 
-					file(file), 
-					line(line)
+		int line):  _code(code), 
+					_msg(std::move(msg)), 
+					_file(file), 
+					_line(line)
 	{
-		fullMessage = "DbException: " + msg + " (File: " + file + ", Line: " + std::to_string(line) + ")";
+		_fullMessage = "DbException: " + _msg + " (File: " + _file + ", Line: " + std::to_string(_line) + ")";
 	}
 
 	const char* DbException::what() const noexcept 
 	{
-		return fullMessage.c_str();
+		return _fullMessage.c_str();
 	}
 
 	ExceptionCode DbException::getCode() const
 	{
-		return code;
+		return _code;
 	}
 }

@@ -33,12 +33,12 @@ namespace Xale::Core
             std::string getLocaltimeDay();
             std::string getLocaltimeMonth();
             std::string getLocaltimeYear();
-            std::string buildType;
-            std::string defaultLogLevel;
-            std::string exceptionLogLevel;
-            std::string outputFilePath;
-            std::string fileNameFormat;
-            bool loaded = false;
+            std::string _buildType;
+            std::string _defaultLogLevel;
+            std::string _exceptionLogLevel;
+            std::string _outputFilePath;
+            std::string _fileNameFormat;
+            bool _loaded = false;
     };
 }
 
