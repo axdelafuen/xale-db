@@ -15,13 +15,15 @@ namespace Xale::Core::Helper
 
 #if defined(__linux__) || defined(linux) || defined(__GNUG__)
         fs::path exe = fs::canonical("/proc/self/exe", ec);
+		std::string path = exe.parent_path().string();
 #else
         fs::path exe = fs::current_path(ec);
+		std::string path = exe.string();
 #endif
         if (ec)
             return {};
 
-        return exe.parent_path().string();
+		return path;
     }
 
     inline std::string getConfigPath(std::string configFileName = XALE_CONFIG_DEFAULT_FILE_NAME)
