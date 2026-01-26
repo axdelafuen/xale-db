@@ -1,11 +1,13 @@
+# For Linux development
 build/*
 ./build/
 
+# For Windows+VisualStudio development
 out/*
 ./out/
-
 .vs/*
 ./.vs/
+CMakeSettings.json
 
 # Prerequisites
 *.d
