@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 
-#define XALE_CONFIG_DEFAULT_FILE_NAME "appconfig.json"
+constexpr auto XALE_CONFIG_DEFAULT_FILE_NAME = "appconfig.json";
 
 namespace Xale::Core::Helper
 {

@@ -1,11 +1,11 @@
-#include <string.h>
-
 #include "Logger.h"
 #include "Core/ExceptionHandler.h"
 #include "Core/AssertException.h"
-#include "Core/ConfigurationHandler.h"
 #include "Core/Setup.h"
 
+/**
+ * @brief Debug entrypoint
+ */
 int main(int argc, char *argv[])
 {
     auto& logger = Xale::Logger::Logger<void>::getInstance();
