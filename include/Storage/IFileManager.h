@@ -1,5 +1,5 @@
-#ifndef I_FILE_MANAGER_H
-#define I_FILE_MANAGER_H
+#ifndef STORAGE_I_FILE_MANAGER_H
+#define STORAGE_I_FILE_MANAGER_H
 
 #include <filesystem>
 #include <string_view>
@@ -18,4 +18,4 @@ namespace Xale::Storage
     };
 }
 
-#endif // I_FILE_MANAGER_H
+#endif // STORAGE_I_FILE_MANAGER_H

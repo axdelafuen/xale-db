@@ -1,5 +1,5 @@
-#ifndef FILE_MANAGER_H
-#define FILE_MANAGER_H
+#ifndef STORAGE_FILE_MANAGER_H
+#define STORAGE_FILE_MANAGER_H
 
 #include "Storage/IFileManager.h"
 #include "Core/ExceptionHandler.h"
@@ -32,4 +32,4 @@ namespace Xale::Storage
     };
 }
 
-#endif // FILE_MANAGER_H
+#endif // STORAGE_FILE_MANAGER_H

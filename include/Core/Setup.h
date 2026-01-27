@@ -1,5 +1,5 @@
-#ifndef XALE_INIT_SETUP_H
-#define XALE_INIT_SETUP_H
+#ifndef CORE_XALE_SETUP_H
+#define CORE_XALE_SETUP_H
 
 #include "Logger.h"
 #include "Core/ConfigurationHandler.h"
@@ -55,4 +55,4 @@ namespace Xale::Core::Init
     }
 }
 
-#endif // XALE_INIT_SETUP_H
+#endif // CORE_XALE_SETUP_H

@@ -1,5 +1,5 @@
-#ifndef I_STORAGE_ENGINE_H
-#define I_STORAGE_ENGINE_H
+#ifndef STORAGE_I_STORAGE_ENGINE_H
+#define STORAGE_I_STORAGE_ENGINE_H
 
 #include "Storage/IFileManager.h"
 
@@ -14,4 +14,4 @@ namespace Xale::Storage
     };
 }
 
-#endif // I_STORAGE_ENGINE_H
+#endif // STORAGE_I_STORAGE_ENGINE_H
