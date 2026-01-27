@@ -16,13 +16,32 @@ make
 
 ## Run
 
+**Debug:**
+
 ```bash
-./build/xale-db
+./build/xale-db-debug
+```
+
+**Server:**
+
+```bash
+./build/xale-db-server
+```
+
+**Client (CLI):**
+
+```bash
+./build/xale-db-cli
+```
+
+**Tests:**
+```bash
+./build/xale-db-tests
 ```
 
 ## Usage
 
-_This is the first implementation goal:_
+/!\ _WIP_ /!\
 
 ```
 CREATE TABLE xaleUser (
