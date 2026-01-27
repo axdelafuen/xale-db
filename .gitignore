@@ -9,6 +9,10 @@ out/*
 ./.vs/
 CMakeSettings.json
 
+# Logs
+Logs/*
+./Logs
+
 # Prerequisites
 *.d
 
