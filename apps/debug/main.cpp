@@ -9,16 +9,10 @@
 /**
  * @brief Debug entrypoint
  */
-int main(int argc, char *argv[])
+int main()
 {
 	// Setup logger
     auto& logger = Xale::Logger::Logger<void>::getInstance();
-
-    if (argc > 1)
-    {
-        logger.error("No arguments expected !");
-        return -1;
-    }
 
 	// Setup core systems
     std::string error;

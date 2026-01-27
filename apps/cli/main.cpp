@@ -3,7 +3,7 @@
 /**
  * @brief CLI entrypoint
  */
-int main(int argc, char* argv[])
+int main()
 {
 	std::cout << "Hello from CLI!" << std::endl;
 

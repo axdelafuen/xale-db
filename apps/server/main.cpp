@@ -3,7 +3,7 @@
 /**
  * @brief Server entrypoint
  */
-int main(int argc, char* argv[])
+int main()
 {
 	std::cout << "Hello from server!" << std::endl;
 

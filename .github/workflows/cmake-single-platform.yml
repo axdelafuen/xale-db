@@ -22,5 +22,5 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-#    - name: Run Tests
-#      run: ${{github.workspace}}/build/xale-logger-tests
+    - name: Run Tests
+      run: ${{github.workspace}}/build/xale-db-tests
