@@ -13,6 +13,10 @@ CMakeSettings.json
 Logs/*
 ./Logs
 
+# Storage fils
+*/*.bin
+*.bin
+
 # Prerequisites
 *.d
 
