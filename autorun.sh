@@ -12,7 +12,7 @@ cmake --build ./build
 
 # Run
 if [ $? -eq 0 ]; then
-    ./build/xale-db
+    ./build/xale-db-debug
 else
     exit 1
 fi
