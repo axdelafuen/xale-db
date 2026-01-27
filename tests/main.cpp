@@ -48,7 +48,7 @@ int main()
         return 1;
     }
 
-    std::cout << std::endl << "All tests passeded (" << passed << "/" << total << " passed)" << std::endl;
+    std::cout << std::endl << "All tests passed (" << passed << "/" << total << " passed)" << std::endl;
     
     return 0;
 }
