@@ -17,12 +17,12 @@ void runTest(
 {
     if (!testFunc())
     {
-        std::cout << "[FAIL] " << testName << std::endl;
+        std::cout << "\t[FAIL] " << testName << std::endl;
         ++failed;
     }
     else
     {
-        std::cout << "[PASS] " << testName << std::endl;
+        std::cout << "\t[PASS] " << testName << std::endl;
         ++passed;
     }
 }
@@ -37,6 +37,8 @@ int main()
     Xale::Logger::Logger<void>::setLogToFile(false);
 
     // FileManagerTests
+    std::cout << "------------------------------------" << std::endl;
+    std::cout << "TESTS> Xale::Storage::FileManager" << std::endl;
     RUN_TEST(test_create_file);
 
     // Tests results
