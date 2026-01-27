@@ -2,6 +2,9 @@
 
 namespace Xale::Storage
 {
+    FileManager::FileManager() : 
+        _logger(Xale::Logger::Logger<FileManager>::getInstance())
+    {}
 
     FileManager::~FileManager()
     {
@@ -17,19 +20,29 @@ namespace Xale::Storage
         _path = path;
 
         _file.open(_path, std::ios::in | std::ios::out | std::ios::binary);
-    
+
         if (!_file.is_open()) {
             std::ofstream create(_path, std::ios::binary);
         
             if (!create)
-                return false;
+            {
+                THROW_DB_EXCEPTION(
+                    Xale::Core::ExceptionCode::StorageOpen, 
+                    "Storage data file failed to created.");
+            }
         
             create.close();
             _file.open(_path, std::ios::in | std::ios::out | std::ios::binary);
      
             if (!_file.is_open())
-                return false;
+            {
+                THROW_DB_EXCEPTION(
+                    Xale::Core::ExceptionCode::StorageOpen, 
+                    "Storage data file failed to open.");
+            }
         }
+
+        _logger.debug("Storage file opened successfully.");
 
         return true;
     }
@@ -46,47 +59,86 @@ namespace Xale::Storage
     std::size_t FileManager::readAt(std::uint64_t offset, void* buffer, std::size_t size)
     {
         if (!buffer || size == 0)
-            return 0;
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::ReadFile,
+                "No buffer initialized.");
+        }
 
         std::lock_guard<std::mutex> lock(_mutex);
-        if (!_file.is_open()) return 0;
+        if (!_file.is_open())
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::ReadFile,
+                "File not open.");
+        }
 
         _file.clear();
         _file.seekg(static_cast<std::streamoff>(offset), std::ios::beg);
-        if (!_file) return 0;
+        if (!_file) 
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::ReadFile,
+                "File failed to clear.");
+        }
 
         _file.read(reinterpret_cast<char*>(buffer), static_cast<std::streamsize>(size));
+
+        _logger.debug("File read successfully (" + std::to_string(size) + " bytes)");
+
         return static_cast<std::size_t>(_file.gcount());
     }
 
     std::size_t FileManager::writeAt(std::uint64_t offset, const void* buffer, std::size_t size)
     {
-        if (!buffer || size == 0) 
-            return 0;
+        if (!buffer || size == 0)
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::WriteFile,
+                "No buffer initialized.");
+        }
 
         std::lock_guard<std::mutex> lock(_mutex);
 
         if (!_file.is_open()) 
-            return 0;
-
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::WriteFile,
+                "File not open.");
+        }
+        
         _file.clear();
         _file.seekp(static_cast<std::streamoff>(offset), std::ios::beg);
 
-        if (!_file) 
-            return 0;
+        if (!_file)
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::WriteFile,
+                "File failed to clear.");
+        }
 
         _file.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(size));
 
         if (!_file) 
-            return 0;
+        {
+            THROW_DB_EXCEPTION(
+                    Xale::Core::ExceptionCode::WriteFile,
+                    "File failed to write buffer.");
+        }
 
+        _logger.debug("File write sccessfully (" + std::to_string(size) + " bytes)"); 
         return size;
     }
 
     bool FileManager::sync()
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        if (!_file.is_open()) return false;
+        if (!_file.is_open())
+        {
+            THROW_DB_EXCEPTION(
+                Xale::Core::ExceptionCode::SyncFile,
+                "File not open.");
+        }
         _file.flush();
         // Platform-specific fsync could be added here for stronger durability
         return static_cast<bool>(_file);
