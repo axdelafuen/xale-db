@@ -17,7 +17,11 @@ namespace Xale::Tests
 
         fileManager.open(currentPath + fileName);
 
-        return std::filesystem::exists(currentPath + fileName);
+        const bool isCreated = std::filesystem::exists(currentPath + fileName);
+
+        // TODO: clean file
+
+        return isCreated;
     }
 }
 
