@@ -9,10 +9,20 @@ XaleDB is a minimal _SQL_ database engine.
 ## Build
 
 ```bash
-mkdir -p build && cd build
+mkdir -p build
+cd build
 cmake ..
 make
 ```
+
+or
+
+```bash
+cmake -B ./build
+cmake --build ./build
+```
+
+or using `autorun.sh`
 
 ## Run
 
