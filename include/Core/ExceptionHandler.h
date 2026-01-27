@@ -12,12 +12,12 @@ namespace Xale::Core
     {
         None = 0,
         Unknown,
-        StartupFailed,
-        WindowInitFailed,
-        VulkanInitFailed,
-        OpenGLInitFailed,
-        AssetNotFound,
-        ShaderCompileError,
+        Startup,
+        StorageOpen,
+        StorageClose,
+        ReadFile,
+        WriteFile,
+        SyncFile,
     };
 
     class DbException : public std::exception 
@@ -35,5 +35,8 @@ namespace Xale::Core
             int _line;
     };
 }
+
+#define THROW_DB_EXCEPTION(code, msg) \
+    throw Xale::Core::DbException(code, msg, __FILE__, __LINE__)
 
 #endif // CORE_EXCEPTION_HANDLER_H

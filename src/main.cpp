@@ -40,7 +40,9 @@ int main(int argc, char *argv[])
     {
         logger.error(std::string(e.what()));
     }
-    
+    logger.info("");
+    logger.info("");
+    logger.info("Test StorageEngine:");
 	// Test Storage Engine
     Xale::Storage::StorageEngine engine("test_storage.bin");
     if (!engine.startup())

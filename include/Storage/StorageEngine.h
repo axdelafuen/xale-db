@@ -5,6 +5,7 @@
 #include "Storage/IStorageEngine.h"
 #include "Storage/IFileManager.h"
 #include "Storage/FileManager.h"
+#include <Logger.h>
 #include <filesystem>
 
 namespace Xale::Storage 
@@ -23,6 +24,7 @@ namespace Xale::Storage
             std::filesystem::path _path;
             FileManager _fileManager;
             bool _started = false;
+            Xale::Logger::Logger<StorageEngine>& _logger;
     };
 }
 

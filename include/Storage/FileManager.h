@@ -2,6 +2,8 @@
 #define FILE_MANAGER_H
 
 #include "Storage/IFileManager.h"
+#include "Core/ExceptionHandler.h"
+#include <Logger.h>
 #include <fstream>
 #include <filesystem>
 #include <mutex>
@@ -12,7 +14,7 @@ namespace Xale::Storage
     class FileManager : public IFileManager
     {
         public:
-            FileManager() = default;
+            FileManager();
             FileManager(const FileManager&) = delete;
             ~FileManager();
             bool open(const std::filesystem::path& path) override;
@@ -26,6 +28,7 @@ namespace Xale::Storage
             mutable std::mutex _mutex;
             std::filesystem::path _path;
             std::fstream _file;
+            Xale::Logger::Logger<FileManager>& _logger;
     };
 }
 
