@@ -18,6 +18,7 @@ namespace Xale::Core
         ReadFile,
         WriteFile,
         SyncFile,
+        DataStruct,
     };
 
     class DbException : public std::exception 

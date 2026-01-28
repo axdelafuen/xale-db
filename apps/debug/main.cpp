@@ -1,8 +1,11 @@
 #include "Logger.h"
+
 #include "Core/ExceptionHandler.h"
 #include "Core/AssertException.h"
 #include "Core/Setup.h"
 #include "Storage/StorageEngine.h"
+#include "DataStructure/Node.h"
+
 #include <vector>
 #include <string>
 
@@ -34,10 +37,12 @@ int main()
     {
         logger.error(std::string(e.what()));
     }
+
+	// Test Storage Engine
     logger.info("");
     logger.info("");
     logger.info("Test StorageEngine:");
-	// Test Storage Engine
+
     Xale::Storage::StorageEngine engine("test_storage.bin");
     if (!engine.startup())
     {
@@ -49,21 +54,26 @@ int main()
 
     const std::string payload = "XALE_BINARY_TEST";
     const std::size_t written = fm.writeAt(0, payload.data(), payload.size());
+
+    if (written == 0)
+        logger.error("Storage write failed!");
+
     fm.sync();
 
     std::vector<char> readbuf(payload.size());
     const std::size_t read = fm.readAt(0, readbuf.data(), readbuf.size());
 
     if (read != payload.size() || std::string(readbuf.begin(), readbuf.end()) != payload)
-    {
         logger.error("Storage read/write verification failed");
-    }
     else
-    {
         logger.debug("Storage read/write verification succeeded");
-    }
 
     engine.shutdown();
+
+    // Test DataStructure
+
+    Xale::DataStructure::Node<int> node;
+    node.insertAtLeaf(17);
 
     return 0;
 }
