@@ -9,35 +9,45 @@
 
 namespace Xale::DataStructure
 {
+    /*
+	 * @brief Node class for B+ tree
+     */
     template <typename TKey, typename TValue>
     class Node
     {
+		using NodePtr = Node<TKey, TValue>*;    // Pointer to templated Node type
+        
         public:
-            Node();
-            bool insertAtLeaf(T value);
-            
+            explicit Node(bool isLeaf);
+            std::size_t findKeyIndex(const TKey& key) const;
+            bool insertLeaf(const TKey& key, const TValue& value);
+            bool insertInner(const TKey& key, NodePtr rightChild);
         private:
             std::vector<TKey> _keys;
-            std::vector<Node*> _children;   // inner nodes
-            std::vector<TValue> _values     // leaf nodes
-            Node* _next;
-            Node* _parent;
+            std::vector<NodePtr> _children;     // inner nodes
+            std::vector<TValue> _values;        // leaf nodes
+            NodePtr _next;
+            NodePtr _parent;
             bool _isLeaf;
     };
 
+
+    /*
+	 * @brief Constructor for Node class
+     */
     template <typename TKey, typename TValue>
-    Node<T>::Node()
+	Node<TKey, TValue>::Node(bool isLeaf = true) : 
+		_next(nullptr),
+		_parent(nullptr),
+        _isLeaf(isLeaf)
     {
         _keys = {};
         _children = {};
         _values = {};
-        _next = nullptr;
-        _parent = nullptr;
-        _isLeaf = true;
     } 
-
+  
     template <typename TKey, typename TValue>
-    std::size_t Node<TKey, TValue>findKeyIndex(const TKey key) const
+    std::size_t Node<TKey, TValue>::findKeyIndex(const TKey& key) const
     {
         std::size_t i = 0;
 
@@ -48,38 +58,31 @@ namespace Xale::DataStructure
     }
 
     template <typename TKey, typename TValue>
-    bool Node<TKey, TValue>::insertAtLeaf(const TKey key, const TValue value)
+    bool Node<TKey, TValue>::insertLeaf(const TKey& key, const TValue& value)
     {
-        try
-        {
-            if(_isLeaf)
-                return false;
+        if(!_isLeaf)
+            return false;
 
-            std::size_t i = findKeyIndex(key);
-            _keys.insert(_keys.begin() + i, key);
-            _values.insert(_values.begin() + i, value);
-            return true;
-        }
-        catch (const std::exception& e)
-        {
-            std::string eStr(e.what());
-            THROW_DB_EXCEPTION(
-                Xale::Core::ExceptionCode::DataStruct,
-                "Node vector error: " + eStr); 
-        }
+        std::size_t i = findKeyIndex(key);
+        _keys.insert(_keys.begin() + i, key);
+        _values.insert(_values.begin() + i, value);
+        
+        return true;
     }
 
     template <typename TKey, typename TValue>
-    bool Node<TKey, TValue>::insertAtInner(const TKey& key, Node* rightChild) {
+    bool Node<TKey, TValue>::insertInner(const TKey& key, NodePtr rightChild)
+    {
         if(_isLeaf)
             return false;
 
         std::size_t i = findKeyIndex(key);
         _keys.insert(_keys.begin() + i, key);
+		_children.resize(_children.size() + 1);
         _children.insert(_children.begin() + i + 1, rightChild);
         
-        // not accessible?
-        //rightChild->_parent = this;
+		rightChild->_parent = this;
+
         return true;
     }
 }
