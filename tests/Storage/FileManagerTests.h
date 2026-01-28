@@ -1,19 +1,21 @@
 #ifndef FILE_MANAGER_TESTS_H
 #define FILE_MANAGER_TESTS_H
 
+#include "TestsHelper.h"
 #include "Storage/FileManager.h"
 #include "Core/ConfigurationPath.h"
 #include "Core/ExceptionHandler.h"
-#include "TestsHelper.h"
 
 #include <string>
 #include <filesystem>
 #include <random>
 #include <vector>
 
+#define DECLARE_FILEMGR_TEST(name) DECLARE_TEST(STORAGE, file_manager_##name)
+
 namespace Xale::Tests
 {
-    bool test_open_file_success()
+    DECLARE_FILEMGR_TEST(open_file_success)
     {
         Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
         const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
@@ -25,7 +27,7 @@ namespace Xale::Tests
         return isCreated;
     }
 
-    bool test_write_and_read_file_success()
+    DECLARE_FILEMGR_TEST(write_and_read_file_success)
     {
         Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
         const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
@@ -47,7 +49,7 @@ namespace Xale::Tests
         return isDataEqual;
     }
 
-    bool test_close_file_success()
+    DECLARE_FILEMGR_TEST(close_file_success)
     {
         bool isWriteExceptionThrown = false;
         bool isReadExceptionThrown = false;
@@ -80,7 +82,7 @@ namespace Xale::Tests
         return isWriteExceptionThrown && isReadExceptionThrown;
 	}
 
-    bool test_write_file_no_buffer_fail()
+    DECLARE_FILEMGR_TEST(write_file_no_buffer_fail)
     {
         Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
         const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
@@ -101,7 +103,7 @@ namespace Xale::Tests
         return false;
     }
 
-    bool test_sync_with_no_file_fail()
+    DECLARE_FILEMGR_TEST(manager_sync_with_no_file_fail)
     {
         Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
         try

@@ -1,32 +1,18 @@
 #include <Logger.h>
-#include "FileManagerTests.h"
-#include "StorageEngineTests.h"
+
+#include "TestsHelper.h"
 
 #include <string>
 #include <iostream>
 
-const int total = 7;
-int failed = 0;
-int passed = 0;
+// Include all test files here
+#include "Storage/StorageEngineTests.h"
+#include "Storage/FileManagerTests.h"
+#include "DataStructure/NodeTests.h"
+// ---
 
-#define RUN_TEST(func) \
-    runTest(#func, func)
-
-void runTest(
-    const std::string& testName,
-    bool (*testFunc)())
-{
-    if (!testFunc())
-    {
-        std::cout << "\t[FAIL] " << testName << std::endl;
-        ++failed;
-    }
-    else
-    {
-        std::cout << "\t[PASS] " << testName << std::endl;
-        ++passed;
-    }
-}
+const std::string RED_COLOR = "\033[31m";
+const std::string RESET = "\033[0m";
 
 int main()
 {
@@ -37,22 +23,33 @@ int main()
     Xale::Logger::Logger<void>::setLogToConsole(false);
     Xale::Logger::Logger<void>::setLogToFile(false);
 
-    // FileManagerTests
-    std::cout << "------------------------------------" << std::endl;
-    std::cout << "TESTS> Xale::Storage::FileManager" << std::endl;
-    RUN_TEST(test_open_file_success);
-	RUN_TEST(test_write_and_read_file_success);
-	RUN_TEST(test_close_file_success);
-    RUN_TEST(test_write_file_no_buffer_fail);
-    RUN_TEST(test_sync_with_no_file_fail);
+    auto& tests = TestRegistry::getTests();
+    const int total = tests.size();
+    int failed = 0;
+    int passed = 0;
 
-    // StorageEngineTests
-    std::cout << "\n------------------------------------" << std::endl;
-    std::cout << "TESTS> Xale::Storage::StorageEngine" << std::endl;
-	RUN_TEST(test_storage_engine_startup_success);
-	RUN_TEST(test_storage_engine_multiple_startup_success);
+    std::cout << "------------------------------------" << std::endl;
+    std::cout << "Running " << total << " test(s)..." << std::endl;
+    std::cout << "------------------------------------" << std::endl;
+
+	for (const auto& testPair : tests)
+    {
+        const std::string& testName = testPair.first;
+        bool (*testFunc)() = testPair.second;
+        if (!testFunc())
+        {
+            std::cout << RED_COLOR << "\t[FAIL] " << testName << RESET << std::endl;
+            ++failed;
+        }
+        else
+        {
+            std::cout << "\t[PASS] " << testName << std::endl;
+            ++passed;
+        }
+    }
 
     // Tests results
+    std::cout << "------------------------------------" << std::endl;
     if (failed != 0 || passed + failed != total)
     {
         std::cout << failed << " test(s) failed (" << passed << "/" << total << " passed)" << std::endl;

@@ -31,16 +31,20 @@ target_link_libraries(xale-db-core PUBLIC xale-logger)
 
 # Debug
 add_executable(xale-db-debug ${DEBUG})
+target_include_directories(xale-db-debug PRIVATE ${INCLUDE_DIR})
 target_link_libraries(xale-db-debug PRIVATE xale-db-core)
 
 # Apps
 add_executable(xale-db-server ${SERVER})
+target_include_directories(xale-db-server PRIVATE ${INCLUDE_DIR})
 target_link_libraries(xale-db-server PRIVATE xale-db-core)
 add_executable(xale-db-cli ${CLI})
+target_include_directories(xale-db-cli PRIVATE ${INCLUDE_DIR})
 target_link_libraries(xale-db-cli PRIVATE xale-db-core)
 
 # Tests
 add_executable(xale-db-tests ${TEST})
+target_include_directories(xale-db-tests PRIVATE ${INCLUDE_DIR} ${CMAKE_SOURCE_DIR})
 target_link_libraries(xale-db-tests PRIVATE xale-db-core)
 
 if(UNIX)

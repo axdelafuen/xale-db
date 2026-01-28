@@ -1,12 +1,14 @@
 #ifndef STORAGE_ENGINE_TESTS_H
 #define STORAGE_ENGINE_TESTS_H
 
-#include "Storage/StorageEngine.h"
 #include "TestsHelper.h"
+#include "Storage/StorageEngine.h"
+
+#define DECLARE_ENGINE_TEST(name) DECLARE_TEST(STORAGE, storage_engine_##name)
 
 namespace Xale::Tests
 {
-	bool test_storage_engine_startup_success()
+	DECLARE_ENGINE_TEST(startup_success)
 	{
 		using namespace Xale::Storage;
 		StorageEngine engine(TEST_FILE_NAME);
@@ -19,7 +21,7 @@ namespace Xale::Tests
 		return true;
 	}
 
-	bool test_storage_engine_multiple_startup_success()
+	DECLARE_ENGINE_TEST(multiple_startup_success)
 	{
 		using namespace Xale::Storage;
 		StorageEngine engine(TEST_FILE_NAME);
