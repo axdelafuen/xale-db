@@ -2,7 +2,7 @@
 #define FILE_MANAGER_TESTS_H
 
 #include "TestsHelper.h"
-#include "Storage/FileManager.h"
+#include "Storage/BinaryFileManager.h"
 #include "Core/ConfigurationPath.h"
 #include "Core/ExceptionHandler.h"
 
@@ -17,21 +17,18 @@ namespace Xale::Tests
 {
     DECLARE_FILEMGR_TEST(open_file_success)
     {
-        Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
-        const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
+        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        fileManager.open(TEST_FILE_NAME);
 
-        fileManager.open(currentPath + TEST_FILE_NAME);
-
-        const bool isCreated = std::filesystem::exists(currentPath + TEST_FILE_NAME);
+        const bool isCreated = std::filesystem::exists(TEST_FILE_NAME);
 
         return isCreated;
     }
 
     DECLARE_FILEMGR_TEST(write_and_read_file_success)
     {
-        Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
-        const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
-        fileManager.open(currentPath + TEST_FILE_NAME);
+        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        fileManager.open(TEST_FILE_NAME);
         
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -54,9 +51,8 @@ namespace Xale::Tests
         bool isWriteExceptionThrown = false;
         bool isReadExceptionThrown = false;
 
-        Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
-        const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
-        fileManager.open(currentPath + TEST_FILE_NAME);
+        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        fileManager.open(TEST_FILE_NAME);
         fileManager.close();
 
         try 
@@ -84,9 +80,8 @@ namespace Xale::Tests
 
     DECLARE_FILEMGR_TEST(write_file_no_buffer_fail)
     {
-        Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
-        const std::string currentPath = Xale::Core::Helper::getExecutableFolderPath();
-        fileManager.open(currentPath + TEST_FILE_NAME);
+        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        fileManager.open(TEST_FILE_NAME);
 
         const std::string writeData = std::string(TEST_DATA_INPUT);
 
@@ -105,7 +100,7 @@ namespace Xale::Tests
 
     DECLARE_FILEMGR_TEST(manager_sync_with_no_file_fail)
     {
-        Xale::Storage::FileManager fileManager = Xale::Storage::FileManager();
+        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
         try
         {
 			fileManager.sync();

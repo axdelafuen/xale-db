@@ -3,7 +3,9 @@
 #include "Core/ExceptionHandler.h"
 #include "Core/AssertException.h"
 #include "Core/Setup.h"
-#include "Storage/StorageEngine.h"
+#include "Storage/BinaryFileManager.h"
+#include "Storage/BinaryFileManager.h"
+#include "Storage/FileStorageEngine.h"
 #include "DataStructure/Node.h"
 
 #include <vector>
@@ -43,14 +45,13 @@ int main()
     logger.info("");
     logger.info("Test StorageEngine:");
 
-    Xale::Storage::StorageEngine engine("test_storage.bin");
+    auto& fm = Xale::Storage::BinaryFileManager();
+    Xale::Storage::FileStorageEngine engine(fm, "debug-storage.bin");
     if (!engine.startup())
     {
         logger.error("StorageEngine startup failed");
         return -1;
     }
-
-    auto& fm = engine.fileManager();
 
     const std::string payload = "XALE_BINARY_TEST";
     const std::size_t written = fm.writeAt(0, payload.data(), payload.size());
@@ -69,6 +70,7 @@ int main()
         logger.debug("Storage read/write verification succeeded");
 
     engine.shutdown();
+    
 
     // Test DataStructure
     logger.info("");

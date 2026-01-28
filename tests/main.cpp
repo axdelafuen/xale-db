@@ -36,16 +36,22 @@ int main()
     {
         const std::string& testName = testPair.first;
         bool (*testFunc)() = testPair.second;
-        if (!testFunc())
-        {
-            std::cout << RED_COLOR << "\t[FAIL] " << testName << RESET << std::endl;
+        try {
+            if (!testFunc())
+            {
+                std::cout << RED_COLOR << "\t[FAIL] " << testName << RESET << std::endl;
+                ++failed;
+            }
+            else
+            {
+                std::cout << "\t[PASS] " << testName << std::endl;
+                ++passed;
+            }
+        }
+        catch (const std::exception& e) {
+            std::cout << RED_COLOR << "\t[FAIL] " << testName << " > " << e.what() << RESET << std::endl;
             ++failed;
-        }
-        else
-        {
-            std::cout << "\t[PASS] " << testName << std::endl;
-            ++passed;
-        }
+		}
     }
 
     // Tests results

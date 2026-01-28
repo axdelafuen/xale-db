@@ -1,19 +1,20 @@
-#include "Storage/StorageEngine.h"
+#include "Storage/FileStorageEngine.h"
 
 namespace Xale::Storage
 {
-    StorageEngine::StorageEngine(const std::string path) :
-        _logger(Xale::Logger::Logger<StorageEngine>::getInstance())
+    FileStorageEngine::FileStorageEngine(IFileManager& fm, const std::string path):
+        _logger(Xale::Logger::Logger<FileStorageEngine>::getInstance()),
+        _fileManager(fm)
     {
-		_path = Xale::Core::Helper::getExecutableFolderPath() + "/" + path;
+		_path = path;
     }
 
-    StorageEngine::~StorageEngine()
+    FileStorageEngine::~FileStorageEngine()
     {
         if (_started) shutdown();
     }
 
-    bool StorageEngine::startup()
+    bool FileStorageEngine::startup()
     {
         if (_started) return true;
 
@@ -29,7 +30,7 @@ namespace Xale::Storage
         return _started;
     }
 
-    void StorageEngine::shutdown()
+    void FileStorageEngine::shutdown()
     {
         if (!_started) return;
         
@@ -45,10 +46,5 @@ namespace Xale::Storage
         }
 
         _started = false;
-    }
-
-    IFileManager& StorageEngine::fileManager()
-    {
-        return _fileManager;
     }
 }
