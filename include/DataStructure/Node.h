@@ -19,6 +19,11 @@ namespace Xale::DataStructure
         
         public:
             explicit Node(bool isLeaf);
+            const std::vector<TKey>& getKeys() const;
+            const std::vector<TValue>& getValues() const;
+            const std::vector<NodePtr>& getChildren() const;
+            NodePtr getParent() const;
+            bool isLeaf() const;
             std::size_t findKeyIndex(const TKey& key) const;
             bool insertLeaf(const TKey& key, const TValue& value);
             bool insertInner(const TKey& key, NodePtr rightChild);
@@ -46,6 +51,36 @@ namespace Xale::DataStructure
         _values = {};
     } 
   
+    template <typename TKey, typename TValue>
+    const std::vector<TKey>& Node<TKey, TValue>::getKeys() const 
+    { 
+        return _keys; 
+    }
+
+	template <typename TKey, typename TValue>
+    const std::vector<TValue>& Node<TKey, TValue>::getValues() const 
+    { 
+        return _values; 
+    }
+
+	template <typename TKey, typename TValue>
+    const std::vector<Node<TKey, TValue>*>& Node<TKey, TValue>::getChildren() const
+    { 
+        return _children; 
+    }
+
+	template <typename TKey, typename TValue>
+    Node<TKey, TValue>* Node<TKey, TValue>::getParent() const 
+    { 
+        return _parent; 
+    }
+
+	template <typename TKey, typename TValue>
+    bool Node<TKey, TValue>::isLeaf() const 
+    { 
+        return _isLeaf; 
+    }
+
     template <typename TKey, typename TValue>
     std::size_t Node<TKey, TValue>::findKeyIndex(const TKey& key) const
     {
@@ -76,9 +111,11 @@ namespace Xale::DataStructure
         if(_isLeaf)
             return false;
 
+        if(_children.empty()) // Ensure there is at least one element
+            _children.push_back(nullptr);
+
         std::size_t i = findKeyIndex(key);
         _keys.insert(_keys.begin() + i, key);
-		_children.resize(_children.size() + 1);
         _children.insert(_children.begin() + i + 1, rightChild);
         
 		rightChild->_parent = this;
