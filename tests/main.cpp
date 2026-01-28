@@ -8,7 +8,7 @@
 // Include all test files here
 #include "Storage/StorageEngineTests.h"
 #include "Storage/FileManagerTests.h"
-#include "DataStructure/NodeTests.h"
+#include "DataStructure/BPlusTreeTests.h"
 // ---
 
 const std::string RED_COLOR = "\033[31m";

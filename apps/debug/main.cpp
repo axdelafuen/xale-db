@@ -6,7 +6,7 @@
 #include "Storage/BinaryFileManager.h"
 #include "Storage/BinaryFileManager.h"
 #include "Storage/FileStorageEngine.h"
-#include "DataStructure/Node.h"
+#include "DataStructure/BPlusTree.h"
 
 #include <vector>
 #include <string>
@@ -75,40 +75,8 @@ int main()
     // Test DataStructure
     logger.info("");
     logger.info("");
-    logger.info("Test DataStructure::Node:");
-
-    Xale::DataStructure::Node<int, std::string> leaf(true);
-
-	logger.info("Leaf Node test:");
+    logger.info("Test DataStructure::BPlusTree:");
     
-    leaf.insertLeaf(10, "ten");
-    leaf.insertLeaf(5, "five");
-    leaf.insertLeaf(20, "twenty");
-    for (std::size_t i = 0; i < 3; ++i) {
-        logger.warning("  key[" + std::to_string(i) + "] = "
-			+ (i == 0 ? "5" : (i == 1 ? "10" : "20")));
-    }
-
-    logger.info("Inner Node test:");
-
-    Xale::DataStructure::Node<int, std::string> inner(false);
-    Xale::DataStructure::Node<int, std::string>* child1 = new Xale::DataStructure::Node<int, std::string>(true);
-    Xale::DataStructure::Node<int, std::string>* child2 = new Xale::DataStructure::Node<int, std::string>(true);
-    Xale::DataStructure::Node<int, std::string>* child3 = new Xale::DataStructure::Node<int, std::string>(true);
-
-	child1->insertLeaf(1, "one");
-	child1->insertLeaf(2, "two");
-
-	child2->insertLeaf(11, "eleven");
-
-	child3->insertLeaf(21, "twenty-one");
-	child3->insertInner(0, child1); // as a leaf it should not work
-
-    inner.insertInner(15, child2);
-    inner.insertInner(4, child1);
-
-	delete child1;
-	delete child2;
 
     return 0;
 }
