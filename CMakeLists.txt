@@ -44,7 +44,7 @@ target_link_libraries(xale-db-cli PRIVATE xale-db-core)
 
 # Tests
 add_executable(xale-db-tests ${TEST})
-target_include_directories(xale-db-tests PRIVATE ${INCLUDE_DIR} ${CMAKE_SOURCE_DIR})
+target_include_directories(xale-db-tests PRIVATE ${INCLUDE_DIR} ${TST_DIR})
 target_link_libraries(xale-db-tests PRIVATE xale-db-core)
 
 if(UNIX)

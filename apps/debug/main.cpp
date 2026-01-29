@@ -4,7 +4,6 @@
 #include "Core/AssertException.h"
 #include "Core/Setup.h"
 #include "Storage/BinaryFileManager.h"
-#include "Storage/BinaryFileManager.h"
 #include "Storage/FileStorageEngine.h"
 #include "DataStructure/BPlusTree.h"
 
@@ -45,7 +44,8 @@ int main()
     logger.info("");
     logger.info("Test StorageEngine:");
 
-    auto& fm = Xale::Storage::BinaryFileManager();
+    //auto& fm = Xale::Storage::BinaryFileManager();
+    Xale::Storage::BinaryFileManager fm;
     Xale::Storage::FileStorageEngine engine(fm, "debug-storage.bin");
     if (!engine.startup())
     {

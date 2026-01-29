@@ -17,7 +17,8 @@ namespace Xale::Tests
 {
     DECLARE_FILEMGR_TEST(open_file_success)
     {
-        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
+
         fileManager.open(TEST_FILE_NAME);
 
         const bool isCreated = std::filesystem::exists(TEST_FILE_NAME);
@@ -27,7 +28,7 @@ namespace Xale::Tests
 
     DECLARE_FILEMGR_TEST(write_and_read_file_success)
     {
-        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
         fileManager.open(TEST_FILE_NAME);
         
         std::random_device rd;
@@ -51,7 +52,7 @@ namespace Xale::Tests
         bool isWriteExceptionThrown = false;
         bool isReadExceptionThrown = false;
 
-        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
         fileManager.open(TEST_FILE_NAME);
         fileManager.close();
 
@@ -80,7 +81,7 @@ namespace Xale::Tests
 
     DECLARE_FILEMGR_TEST(write_file_no_buffer_fail)
     {
-        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
         fileManager.open(TEST_FILE_NAME);
 
         const std::string writeData = std::string(TEST_DATA_INPUT);
@@ -100,7 +101,7 @@ namespace Xale::Tests
 
     DECLARE_FILEMGR_TEST(manager_sync_with_no_file_fail)
     {
-        Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
         try
         {
 			fileManager.sync();

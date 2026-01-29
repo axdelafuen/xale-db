@@ -11,7 +11,7 @@ namespace Xale::Tests
 
 	DECLARE_ENGINE_TEST(startup_success)
 	{
-		Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
 		Xale::Storage::FileStorageEngine engine(fileManager, TEST_FILE_NAME);
 		bool started = engine.startup();
 		if (!started)
@@ -24,7 +24,7 @@ namespace Xale::Tests
 
 	DECLARE_ENGINE_TEST(multiple_startup_success)
 	{
-		Xale::Storage::IFileManager& fileManager = Xale::Storage::BinaryFileManager();
+        Xale::Storage::BinaryFileManager fileManager;
 		Xale::Storage::FileStorageEngine engine(fileManager, TEST_FILE_NAME);
 		bool started = engine.startup();
 		if (!started)
