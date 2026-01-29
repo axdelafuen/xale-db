@@ -5,12 +5,14 @@
 
 namespace Xale::Storage 
 {
+    /*
+	 * @brief Interface for storage engine operations
+     */
     class IStorageEngine
     {
         public:
             virtual bool startup() = 0;
             virtual void shutdown() = 0;
-            virtual IFileManager& fileManager() = 0;
     };
 }
 
