@@ -51,6 +51,22 @@ or using `autorun.sh`
 
 ## Usage
 
+**Features:**
+
+- Basic SQL commands: `CREATE TABLE`, `INSERT`, `SELECT`, `UPDATE`, `DELETE`
+- File-based storage
+- Client-server architecture
+
+**Not Implemented Features:**
+
+- Advanced SQL commands and features
+- Concurrency control
+- Indexing
+- Transactions
+
+
+### Commands examples
+
 /!\ _WIP_ /!\
 
 ```
@@ -107,6 +123,10 @@ DELETE FROM xaleUser WHERE id = 1;
 ```
 
 > 1 row deleted from `xaleUser`.
+
+## License
+
+This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3 - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
