@@ -2,7 +2,6 @@
 #define QUERY_TOKEN_H
 
 #include <string>
-
 #include <unordered_set>
 
 namespace Xale::Query
@@ -43,7 +42,7 @@ namespace Xale::Query
 #define DECLARE_TOKENS(name, ...) \
     const std::unordered_set<std::string> name({__VA_ARGS__})
 
-    // data definition keywords
+    // Data definition keywords
     DECLARE_TOKENS(sql_definition_kw,
         "CREATE",
         "ALTER",
@@ -81,6 +80,7 @@ namespace Xale::Query
     // Operators
     DECLARE_TOKENS(sql_operators,
         "*",
+        ",",
         "=", 
         "!=",
         "<",
@@ -89,8 +89,11 @@ namespace Xale::Query
         ">="
     );
 
-
     // For debug purpose
+    /*
+	 * @brief Convert TokenType to string
+	 * @return string representation of TokenType
+     */
     inline const std::string to_string(TokenType type)
     {
         switch (type)
@@ -99,7 +102,7 @@ namespace Xale::Query
             case TokenType::ManipulationKeyword:    return "ManipulationKeyword";
             case TokenType::QueryKeyword:           return "QueryKeyword";
             case TokenType::JoinKeyword:            return "JoinKeyword";
-            case TokenType::LogicalKeyword:         return "DefinitionKeyword";
+            case TokenType::LogicalKeyword:         return "LogicalKeyword";
             case TokenType::Operator:               return "Operator";
             case TokenType::Identifier:             return "Identifier";
             case TokenType::StringLiteral:          return "StringLiteral";
