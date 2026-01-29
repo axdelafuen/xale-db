@@ -25,21 +25,25 @@ namespace Xale::Execution
 			case Xale::Query::StatementType::Delete: return executeDelete(static_cast<Xale::Query::DeleteStatement*>(statement));
 			case Xale::Query::StatementType::Create: return executeCreate(static_cast<Xale::Query::CreateStatement*>(statement));
 			case Xale::Query::StatementType::Drop: return executeDrop(static_cast<Xale::Query::DropStatement*>(statement));
-			default: THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Unsupported statement type");
+            default: THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Unsupported statement type");
 		}
 	}
 
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeSelect(Xale::Query::SelectStatement* stmt)
 	{
 		auto table = _tableManager.getTable(stmt->tableName);
-		if (!table) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+		if (!table) 
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+
 		auto resultSet = std::make_unique<Xale::DataStructure::ResultSet>();
-		if (stmt->columns.size() == 1 && stmt->columns[0].type == Xale::Query::ExpressionType::Wildcard) {
+
+		if (stmt->columns.size() == 1 && stmt->columns[0].type == Xale::Query::ExpressionType::Wildcard)
 			for (const auto& col : table->getSchema()) resultSet->addColumn(col);
-		} else {
+		else
 			for (const auto& col : stmt->columns) resultSet->addColumn(Xale::DataStructure::ColumnDefinition(col.value, Xale::DataStructure::FieldType::String));
-		}
-		for (const auto& row : table->getRows()) {
+		
+		for (const auto& row : table->getRows())
+        {
 			if (stmt->where && !evaluateCondition(row, stmt->where.get())) continue;
 			resultSet->addRow(row);
 		}
@@ -49,15 +53,20 @@ namespace Xale::Execution
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeInsert(Xale::Query::InsertStatement* stmt)
 	{
 		auto table = _tableManager.getTable(stmt->tableName);
-		if (!table) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+		if (!table) 
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table does not exist");
+
 		Xale::DataStructure::Row newRow;
-		for (size_t i = 0; i < stmt->values.size(); ++i) {
+
+		for (size_t i = 0; i < stmt->values.size(); ++i)
+        {
 			const auto& expr = stmt->values[i];
 			Xale::DataStructure::FieldValue value = evaluateExpression(expr);
 			const auto& schema = table->getSchema();
-			if (i >= schema.size()) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Too many values");
+			if (i >= schema.size()) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Too many values");
 			newRow.fields.push_back(Xale::DataStructure::Field(schema[i].name, schema[i].type, value));
 		}
+
 		table->insertRow(newRow);
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
@@ -65,18 +74,28 @@ namespace Xale::Execution
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeUpdate(Xale::Query::UpdateStatement* stmt)
 	{
 		auto table = _tableManager.getTable(stmt->tableName);
-		if (!table) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+
+		if (!table) 
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table does not exist");
+
 		std::unordered_map<std::string, Xale::DataStructure::FieldValue> updates;
-		for (const auto& assignment : stmt->assignments) updates[assignment.first] = evaluateExpression(assignment.second);
+		for (const auto& assignment : stmt->assignments) 
+            updates[assignment.first] = evaluateExpression(assignment.second);
+
 		table->updateRows("", Xale::DataStructure::FieldValue(), updates);
+
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeDelete(Xale::Query::DeleteStatement* stmt)
 	{
 		auto table = _tableManager.getTable(stmt->tableName);
-		if (!table) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+
+		if (!table) 
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table does not exist");
+
 		table->deleteRows("", Xale::DataStructure::FieldValue());
+
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 
@@ -88,7 +107,8 @@ namespace Xale::Execution
 
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeDrop(Xale::Query::DropStatement* stmt)
 	{
-		if (!_tableManager.dropTable(stmt->tableName)) THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::Unknown, "Table does not exist");
+		if (!_tableManager.dropTable(stmt->tableName))
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table does not exist");
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 

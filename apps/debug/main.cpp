@@ -281,10 +281,10 @@ int main()
     auto insertResult2 = executor.execute(insertStmt2.get());
 
 	// Select specific row
+    // where 'id' is equal to '2'
 	auto selectStmt2 = std::make_unique<Xale::Query::SelectStatement>();
 	selectStmt2->tableName = "users";
     
-    // select on the 'id' where equal to 2
     selectStmt2->where = std::make_unique<Xale::Query::WhereClause>();
 	selectStmt2->where->condition = std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::BinaryOp);
 	selectStmt2->where->condition->binary = std::make_unique<Xale::Query::BinaryExpression>();

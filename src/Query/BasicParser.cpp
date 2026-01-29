@@ -26,7 +26,7 @@ namespace Xale::Query
     std::unique_ptr<Statement> BasicParser::parse(const std::string& query)
     {
         if (!_tokenizer)
-            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ParseError, "No tokenizer set");
+            throwError("No tokenizer set");
 
         _tokenizer->setInput(query);
         _tokenizer->reset();
@@ -158,7 +158,10 @@ namespace Xale::Query
         else if (matchKeyword("DROP"))
             return parseDrop();
         else
+        {
             throwError("Expected SQL statement (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP)");
+            return nullptr;
+        }
     }
 
     /*
@@ -453,7 +456,10 @@ namespace Xale::Query
             return expr;
         }
         else
+        {
             throwError("Expected identifier or literal");
+            return nullptr;
+        }
     }
 
     /*
