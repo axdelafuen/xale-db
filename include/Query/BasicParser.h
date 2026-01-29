@@ -35,7 +35,7 @@ namespace Xale::Query
             bool matchIdentifier(const std::string& identifier);
             void expect(TokenType type, const std::string& errorMsg);
             void expectKeyword(const std::string& keyword, const std::string& errorMsg);
-            [[noreturn]] void throwError(const std::string& message);
+            void throwError(const std::string& message);
 
             std::unique_ptr<Statement> parseStatement();
             std::unique_ptr<SelectStatement> parseSelect();

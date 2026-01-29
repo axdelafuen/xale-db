@@ -7,8 +7,7 @@ namespace Xale::Query
      */
     BasicParser::BasicParser()
         : _tokenizer(nullptr)
-    {
-    }
+    {}
 
     /*
      * @brief Constructor with tokenizer
@@ -16,8 +15,7 @@ namespace Xale::Query
      */
     BasicParser::BasicParser(ITokenizer* tokenizer)
         : _tokenizer(tokenizer)
-    {
-    }
+    {}
 
     /*
      * @brief Parse a SQL query string
@@ -134,7 +132,7 @@ namespace Xale::Query
      * @param message Error message
      * @throws DbException with parse error code
      */
-    [[noreturn]] void BasicParser::throwError(const std::string& message)
+    void BasicParser::throwError(const std::string& message)
     {
         std::string fullMessage = message + " at position " + std::to_string(_currentToken.position);
         THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ParseError, fullMessage);
@@ -233,6 +231,7 @@ namespace Xale::Query
 
         if (!matchIdentifier("VALUES"))
             throwError("Expected VALUES keyword");
+        
         advance();
 
         do
