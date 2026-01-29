@@ -8,9 +8,12 @@
 #include "DataStructure/BPlusTree.h"
 #include "Query/BasicTokenizer.h"
 #include "Query/BasicParser.h"
+
 #include "DataStructure/ResultSet.h"
 #include "DataStructure/Table.h"
 
+#include "Execution/TableManager.h"
+#include "Execution/BasicExecutor.h"
 
 #include <vector>
 #include <string>
@@ -195,6 +198,127 @@ int main()
     {
         logger.warning("Parse error (expected): " + std::string(e.what()));
     }
+
+    logger.info("");
+    logger.info("");
+    logger.info("Test Execution::BasicExecutor:");
+	
+    Xale::Storage::BinaryFileManager execFm;
+	Xale::Storage::FileStorageEngine execEngine(execFm, "executor-storage.bin");
+	
+    if (!execEngine.startup())
+	{
+		logger.error("Executor StorageEngine startup failed");
+		return -1;
+	}
+	
+    Xale::Execution::TableManager tableManager(execEngine);
+	Xale::Execution::BasicExecutor executor(tableManager);
+	
+    // Create a table
+    auto createTableStmt = std::make_unique<Xale::Query::CreateStatement>();
+    createTableStmt->tableName = "users";
+	auto createResult = executor.execute(createTableStmt.get());
+    auto* usersTable = tableManager.getTable("users");
+    if (usersTable)
+    {
+        usersTable->addColumn(Xale::DataStructure::ColumnDefinition("id", Xale::DataStructure::FieldType::Integer, true));
+        usersTable->addColumn(Xale::DataStructure::ColumnDefinition("name", Xale::DataStructure::FieldType::String));
+        usersTable->addColumn(Xale::DataStructure::ColumnDefinition("age", Xale::DataStructure::FieldType::Integer));
+    }
+
+    // Insert a row
+    auto insertStmt = std::make_unique<Xale::Query::InsertStatement>();
+    insertStmt->tableName = "users";
+    insertStmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "1"));
+    insertStmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'John'"));
+    insertStmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "25"));
+	auto insertResult = executor.execute(insertStmt.get());
+	
+    // Select rows
+    auto selectStmt = std::make_unique<Xale::Query::SelectStatement>();
+    selectStmt->tableName = "users";
+    selectStmt->columns.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::Wildcard, "*"));
+    auto selectResult = executor.execute(selectStmt.get());
+
+    logger.info("Select Result Rows: " + std::to_string(selectResult->getRowCount()));
+    for (const auto& row : selectResult->getRows())
+    {
+        logger.info(" Row:");
+        for (const auto& field : row.fields)
+        {
+            std::string valueStr = std::visit([](auto&& arg) -> std::string {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, std::monostate>)
+                    return "NULL";
+                else if constexpr (std::is_same_v<T, int>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, double>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, std::string>)
+                    return arg;
+                else
+                    return "UNKNOWN";
+                }, field.value);
+
+            logger.info("   " + field.name + " = " + valueStr);
+        }
+    }
+
+	// Insert more rows
+    auto insertStmt1 = std::make_unique<Xale::Query::InsertStatement>();
+    insertStmt1->tableName = "users";
+    insertStmt1->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "2"));
+    insertStmt1->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'Tom'"));
+    insertStmt1->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "200"));
+    auto insertResult1 = executor.execute(insertStmt1.get());
+
+    auto insertStmt2 = std::make_unique<Xale::Query::InsertStatement>();
+    insertStmt2->tableName = "users";
+    insertStmt2->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "3"));
+    insertStmt2->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'Fred'"));
+    insertStmt2->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "10000"));
+    auto insertResult2 = executor.execute(insertStmt2.get());
+
+	// Select specific row
+	auto selectStmt2 = std::make_unique<Xale::Query::SelectStatement>();
+	selectStmt2->tableName = "users";
+    
+    // select on the 'id' where equal to 2
+    selectStmt2->where = std::make_unique<Xale::Query::WhereClause>();
+	selectStmt2->where->condition = std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::BinaryOp);
+	selectStmt2->where->condition->binary = std::make_unique<Xale::Query::BinaryExpression>();
+	selectStmt2->where->condition->binary->left = std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::Identifier, "id");
+	selectStmt2->where->condition->binary->op = "=";
+	selectStmt2->where->condition->binary->right = std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::NumericLiteral, "2");
+	
+    auto selectResult2 = executor.execute(selectStmt2.get());
+
+	logger.info("Select Result Rows: " + std::to_string(selectResult2->getRowCount()));
+
+	for (const auto& row : selectResult2->getRows())
+	{
+		logger.info(" Row:");
+		for (const auto& field : row.fields)
+		{
+			std::string valueStr = std::visit([](auto&& arg) -> std::string {
+				using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, std::monostate>)
+                    return "NULL";
+                else if constexpr (std::is_same_v<T, int>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, double>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, std::string>)
+                    return arg;
+                else
+                    return "UNKNOWN";
+				}, field.value);
+			logger.info("   " + field.name + " = " + valueStr);
+		}
+	}
+
+    execEngine.shutdown();
 
     return 0;
 }

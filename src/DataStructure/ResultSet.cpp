@@ -1,4 +1,5 @@
 #include "DataStructure/ResultSet.h"
+#include "Core/ExceptionHandler.h"
 
 namespace Xale::DataStructure
 {
@@ -52,7 +53,7 @@ namespace Xale::DataStructure
      */
     size_t ResultSet::getColumnCount() const
     {
-        return _columns.size();
+        return _schema.size();
     }
 
     /*
@@ -77,9 +78,9 @@ namespace Xale::DataStructure
      * @brief Add column definition (used by executor)
      * @param column Column definition
      */
-    void ResultSet::addColumn(const std::string& name)
+    void ResultSet::addColumn(const ColumnDefinition& column)
     {
-        _columns.push_back(name);
+        _schema.push_back(column);
     }
 
     /*

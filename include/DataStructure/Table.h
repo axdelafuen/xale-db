@@ -2,6 +2,7 @@
 #define DATA_STRUCTURE_TABLE_H
 
 #include "DataStructure/IDataTemplate.h"
+#include "DataStructure/BPlusTree.h"
 
 #include <unordered_map>
 

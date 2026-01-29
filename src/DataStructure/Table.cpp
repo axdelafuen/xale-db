@@ -77,11 +77,9 @@ namespace Xale::DataStructure
 	 * @brief Add column definition
 	 * @param column Column definition
 	 */
-	bool Table::addColumn(const ColumnDefinition& column)
+	void Table::addColumn(const ColumnDefinition& column)
 	{
 		_schema.push_back(column);
-
-		return true;
 	}
 
 	/*
@@ -92,7 +90,7 @@ namespace Xale::DataStructure
 	 */
 	bool Table::insertRow(const Row& row)
 	{
-		if (row.size() != _schema.size())
+		if (row.fields.size() != _schema.size())
 			return false;
 		
 		_rows.push_back(row);
@@ -129,7 +127,7 @@ namespace Xale::DataStructure
 
 		for (auto& row : _rows)
 		{
-			if (row[columnIndex] == value)
+			if (row.fields[columnIndex].value == value)
 			{
 				for (const auto& [updateColumn, newValue] : updates)
 				{
@@ -137,7 +135,7 @@ namespace Xale::DataStructure
 					{
 						if (_schema[j].name == updateColumn)
 						{
-							row[j] = newValue;
+							row.fields[j].value = newValue;
 							break;
 						}
 					}
@@ -175,7 +173,7 @@ namespace Xale::DataStructure
 
 		while (it != _rows.end())
 		{
-			if ((*it)[columnIndex] == value)
+			if ((*it).fields[columnIndex].value == value)
 			{
 				it = _rows.erase(it);
 				++deletedCount;
@@ -212,7 +210,7 @@ namespace Xale::DataStructure
 
 		for (const auto& row : _rows)
 		{
-			if (row[columnIndex] == value)
+			if (row.fields[columnIndex].value == value)
 				result.push_back(row);
 		}
 
