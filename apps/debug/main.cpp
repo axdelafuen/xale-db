@@ -8,6 +8,9 @@
 #include "DataStructure/BPlusTree.h"
 #include "Query/BasicTokenizer.h"
 #include "Query/BasicParser.h"
+#include "DataStructure/ResultSet.h"
+#include "DataStructure/Table.h"
+
 
 #include <vector>
 #include <string>
