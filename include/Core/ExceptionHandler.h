@@ -19,6 +19,7 @@ namespace Xale::Core
         WriteFile,
         SyncFile,
         DataStruct,
+        ParseError,
     };
 
     class DbException : public std::exception 

@@ -43,7 +43,7 @@ namespace Xale::Query
 #define DECLARE_TOKENS(name, ...) \
     const std::unordered_set<std::string> name({__VA_ARGS__})
 
-    // data definition keywords
+    // Data definition keywords
     DECLARE_TOKENS(sql_definition_kw,
         "CREATE",
         "ALTER",
@@ -81,6 +81,7 @@ namespace Xale::Query
     // Operators
     DECLARE_TOKENS(sql_operators,
         "*",
+        ",",
         "=", 
         "!=",
         "<",
