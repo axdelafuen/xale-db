@@ -6,9 +6,11 @@
 #include "Storage/BinaryFileManager.h"
 #include "Storage/FileStorageEngine.h"
 #include "DataStructure/BPlusTree.h"
+#include "Query/BasicTokenizer.h"
 
 #include <vector>
 #include <string>
+#include <memory>
 
 /**
  * @brief Debug entrypoint
@@ -76,7 +78,21 @@ int main()
     logger.info("");
     logger.info("");
     logger.info("Test DataStructure::BPlusTree:");
-    
+   
+    // Test Tokenizer
+    logger.info("");
+    logger.info("");
+    logger.info("Test Query::Tokenizer:");
+
+    std::unique_ptr<Xale::Query::ITokenizer> tokenizer = std::make_unique<Xale::Query::BasicTokenizer>();
+    tokenizer->setInput("SELECT * FROM users WHERE id != 5");// AND name = 'vincento'");
+
+    for (const auto& token : tokenizer->tokenize())
+    {
+        logger.debug(
+                "[" + to_string(token.type) + "] " +
+                "'" + token.lexeme + "'");
+    }
 
     return 0;
 }

@@ -9,6 +9,7 @@
 #include "Storage/StorageEngineTests.h"
 #include "Storage/FileManagerTests.h"
 #include "DataStructure/BPlusTreeTests.h"
+#include "Query/BasicTokenizerTests.h"
 // ---
 
 const std::string RED_COLOR = "\033[31m";
