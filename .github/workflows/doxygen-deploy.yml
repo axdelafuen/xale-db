@@ -3,9 +3,9 @@ name: Build and Deploy Doxygen Docs
 on:
   push:
     branches: [ main ]
-#    paths:
-#      - 'src/**'
-#      - 'include/**'
+    paths:
+      - 'src/**'
+      - 'include/**'
 
 permissions:
   contents: read
