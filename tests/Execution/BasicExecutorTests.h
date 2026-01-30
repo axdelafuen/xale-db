@@ -19,10 +19,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-create_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             auto createStmt = std::make_unique<Xale::Query::CreateStatement>();
@@ -48,10 +48,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-insert_row.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create table
@@ -90,10 +90,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-select_all.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create and setup table
@@ -142,10 +142,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-select_where.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create and setup table
@@ -195,10 +195,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-select_where_greater_than.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create and setup table
@@ -250,10 +250,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-drop_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create table
@@ -286,10 +286,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-select_nonexistent_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             auto selectStmt = std::make_unique<Xale::Query::SelectStatement>();
@@ -312,10 +312,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-executor.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-insert_wrong_value_count.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             Xale::Execution::BasicExecutor executor(manager);
             
             // Create table with 2 columns

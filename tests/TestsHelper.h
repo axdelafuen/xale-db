@@ -8,7 +8,7 @@
 
 namespace Xale::Tests 
 {
-    const std::string TEST_FILE_NAME = Xale::Core::Helper::getExecutableFolderPath() + "/storage-file-unit-tests.bin";
+    const std::string TEST_FILE_NAME = Xale::Core::Helper::getExecutableFolderPath() + "/test-storage-file-unit-tests.bin";
     const std::string TEST_DATA_INPUT = "The cards needs to be shuffle {X} times. {X} is a random value: ";
 
     struct TestRegistry {

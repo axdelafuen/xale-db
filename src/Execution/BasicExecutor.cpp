@@ -68,6 +68,10 @@ namespace Xale::Execution
 		}
 
 		table->insertRow(newRow);
+		
+		// Auto-save after inserting row
+		_tableManager.saveAllTables();
+		
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 
@@ -84,6 +88,9 @@ namespace Xale::Execution
 
 		table->updateRows("", Xale::DataStructure::FieldValue(), updates);
 
+		// Auto-save after updating rows
+		_tableManager.saveAllTables();
+
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 
@@ -96,36 +103,38 @@ namespace Xale::Execution
 
 		table->deleteRows("", Xale::DataStructure::FieldValue());
 
+		// Auto-save after deleting rows
+		_tableManager.saveAllTables();
+
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeCreate(Xale::Query::CreateStatement* stmt)
 	{
-		_tableManager.createTable(stmt->tableName);
+		auto table = _tableManager.createTable(stmt->tableName);
+		
+		if (!table)
+			THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table already exists");
 		
 		if (!stmt->columns.empty())
 		{
-			auto table = _tableManager.getTable(stmt->tableName);
-			if (table)
+			for (const auto& colDef : stmt->columns)
 			{
-				for (const auto& colDef : stmt->columns)
-				{
-					Xale::DataStructure::FieldType fieldType;
-					if (colDef.type == "INT" || colDef.type == "INTEGER")
-						fieldType = Xale::DataStructure::FieldType::Integer;
-					else if (colDef.type == "FLOAT" || colDef.type == "DOUBLE")
-						fieldType = Xale::DataStructure::FieldType::Float;
-					else if (colDef.type == "STRING" || colDef.type == "TEXT" || colDef.type == "VARCHAR")
-						fieldType = Xale::DataStructure::FieldType::String;
-					else
-						THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Unknown column type: " + colDef.type);
-					
-					table->addColumn(Xale::DataStructure::ColumnDefinition(
-						colDef.name,
-						fieldType,
-						colDef.isPrimaryKey
-					));
-				}
+				Xale::DataStructure::FieldType fieldType;
+				if (colDef.type == "INT" || colDef.type == "INTEGER")
+					fieldType = Xale::DataStructure::FieldType::Integer;
+				else if (colDef.type == "FLOAT" || colDef.type == "DOUBLE")
+					fieldType = Xale::DataStructure::FieldType::Float;
+				else if (colDef.type == "STRING" || colDef.type == "TEXT" || colDef.type == "VARCHAR")
+					fieldType = Xale::DataStructure::FieldType::String;
+				else
+					THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Unknown column type: " + colDef.type);
+				
+				table->addColumn(Xale::DataStructure::ColumnDefinition(
+					colDef.name,
+					fieldType,
+					colDef.isPrimaryKey
+				));
 			}
 		}
 		
@@ -162,18 +171,15 @@ namespace Xale::Execution
 		
 		const auto& condition = where->condition;
 		
-		// Handle binary expressions (e.g., id = 2, age > 18)
 		if (condition->type == Xale::Query::ExpressionType::BinaryOp && condition->binary)
 		{
 			const auto& binary = condition->binary;
 			
-			// Left side should be identifier (column name)
 			if (binary->left->type != Xale::Query::ExpressionType::Identifier)
 				return true;
 			
 			std::string columnName = binary->left->value;
 			
-			// Find the field in the row
 			Xale::DataStructure::FieldValue leftValue;
 			bool found = false;
 			for (const auto& field : row.fields)
@@ -189,10 +195,8 @@ namespace Xale::Execution
 			if (!found)
 				return false;
 			
-			// Evaluate right side
 			Xale::DataStructure::FieldValue rightValue = evaluateExpression(*binary->right);
 			
-			// Compare based on operator
 			const std::string& op = binary->op;
 			
 			try
