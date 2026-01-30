@@ -68,5 +68,21 @@ int main()
 
     std::cout << std::endl << "All tests passed (" << passed << "/" << total << " passed)" << std::endl;
     
+    try {
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path()))
+        {
+            if (entry.is_regular_file())
+            {
+                const std::string filename = entry.path().filename().string();
+                if (filename.find("test-") == 0 && filename.size() >= 4 && filename.substr(filename.size() - 4) == ".bin")
+                {
+                    std::filesystem::remove(entry.path());
+                }
+            }
+        }
+    } catch (...) {
+        // Ignore cleanup errors
+    }
+
     return 0;
 }

@@ -5,6 +5,8 @@
 #include "DataStructure/BPlusTree.h"
 
 #include <unordered_map>
+#include <cstdint>
+#include <cstring>
 
 namespace Xale::DataStructure
 {
@@ -30,6 +32,9 @@ namespace Xale::DataStructure
                 const std::unordered_map<std::string, FieldValue>& updates);
             size_t deleteRows(const std::string& columnName, const FieldValue& value);
             std::vector<Row> findRows(const std::string& columnName, const FieldValue& value) const;
+
+            std::vector<char> serialize() const;
+            static Table deserialize(const std::vector<char>& data);
 
         private:
             std::string _name;

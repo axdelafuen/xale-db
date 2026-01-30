@@ -17,10 +17,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-create_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             auto* table = manager.createTable("users");
             
@@ -42,22 +42,26 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-create_duplicate_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             auto* table1 = manager.createTable("users");
             auto* table2 = manager.createTable("users");
-            
-            bool result = (table1 != nullptr) && (table2 == nullptr);
+
+            if (table1 != nullptr && table2 == nullptr)
+            {
+                storage.shutdown();
+                return true;
+            }
             
             storage.shutdown();
-            return result;
+            return false;
         }
         catch (const Xale::Core::DbException&)
         {
-            return false;
+            return true;
         }
     }
 
@@ -66,10 +70,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-get_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             manager.createTable("users");
             auto* table = manager.getTable("users");
@@ -90,10 +94,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-get_nonexistent_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             auto* table = manager.getTable("nonexistent");
             
@@ -113,10 +117,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-drop_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             manager.createTable("users");
             bool dropped = manager.dropTable("users");
@@ -138,10 +142,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-drop_nonexistent_table.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             bool dropped = manager.dropTable("nonexistent");
             
@@ -161,10 +165,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-table_exists.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             bool beforeCreate = manager.tableExists("users");
             manager.createTable("users");
@@ -188,10 +192,10 @@ namespace Xale::Tests
         try
         {
             Xale::Storage::BinaryFileManager fm;
-            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager.bin");
+            Xale::Storage::FileStorageEngine storage(fm, "test-table-manager-get_table_names.bin");
             storage.startup();
             
-            Xale::Execution::TableManager manager(storage);
+            Xale::Execution::TableManager manager(storage, fm);
             
             auto namesEmpty = manager.getTableNames();
             

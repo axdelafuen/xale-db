@@ -1,5 +1,4 @@
 #include "DataStructure/ResultSet.h"
-#include "Core/ExceptionHandler.h"
 
 namespace Xale::DataStructure
 {

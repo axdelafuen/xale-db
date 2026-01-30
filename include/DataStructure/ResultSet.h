@@ -2,6 +2,7 @@
 #define DATA_STRUCTURE_RESULT_SET_H
 
 #include "DataStructure/IDataTemplate.h"
+#include "Core/ExceptionHandler.h"
 
 namespace Xale::DataStructure
 {
