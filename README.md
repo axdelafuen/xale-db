@@ -60,6 +60,7 @@ or using `autorun.sh`
 **Not Implemented Features:**
 
 - Advanced SQL commands and features
+- Multiple commands in one query
 - Concurrency control
 - Indexing
 - Transactions
@@ -67,44 +68,40 @@ or using `autorun.sh`
 
 ### Commands examples
 
-/!\ _WIP_ /!\
-
 ```
-CREATE TABLE xaleUser (
-	id INT,
-	name STRING,
-	age INT
-);
+CREATE TABLE xaleUser (id INT, name STRING, age INT)
 ```
 
-> Table `xaleUser` created successfully.
+> Query OK, table created
 
 ---
 
 
 ```
-INSERT INTO xaleUser (id, name, age) VALUES (1, "Alice", 30);
+INSERT INTO xaleUser (id, name, age) VALUES (1, "Alice", 30)
 ```
 
-> 1 row inserted into `xaleUser`.
+> Query OK, 1 row inserted
 
 ---
 
 ```
-SELECT * FROM xaleUser;
+SELECT * FROM xaleUser
 ```
 
 > | id | name  | age |
 > |----|-------|-----|
 > | 1  | Alice | 30  |
+>
+> 2 rows in set
 
 ---
 
 ```
-UPDATE xaleUser SET age = 31 WHERE id = 1;
+UPDATE xaleUser SET age = 31 WHERE id = 1
 ```
 
-> 1 row updated in `xaleUser`.
+> Query OK, 1 row updated
 
 ---
 
@@ -122,7 +119,7 @@ SELECT * FROM xaleUser;
 DELETE FROM xaleUser WHERE id = 1;
 ```
 
-> 1 row deleted from `xaleUser`.
+> Query OK, 1 row deleted
 
 ## License
 

@@ -15,6 +15,8 @@
 #include "Execution/TableManager.h"
 #include "Execution/BasicExecutor.h"
 
+#include "Engine/QueryEngine.h"
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -101,6 +103,8 @@ int main()
                 "'" + token.lexeme + "'");
     }
 
+    /*
+    // Test Parser
     logger.info("");
     logger.info("");
     logger.info("Test Query::Parser:");
@@ -198,7 +202,7 @@ int main()
     {
         logger.warning("Parse error (expected): " + std::string(e.what()));
     }
-
+    
     logger.info("");
     logger.info("");
     logger.info("Test Execution::BasicExecutor:");
@@ -282,6 +286,7 @@ int main()
 
 	// Select specific row
     // where 'id' is equal to '2'
+    
 	auto selectStmt2 = std::make_unique<Xale::Query::SelectStatement>();
 	selectStmt2->tableName = "users";
     
@@ -317,6 +322,80 @@ int main()
 			logger.info("   " + field.name + " = " + valueStr);
 		}
 	}
+
+    auto selectStmt3 = parser.parse("SELECT * FROM users WHERE id = 2");
+    auto selectResult3 = executor.execute(selectStmt3.get());
+
+    logger.info("Select Result Rows: " + std::to_string(selectResult3->getRowCount()));
+
+	for (const auto& row : selectResult3->getRows())
+	{
+		logger.info(" Row:");
+		for (const auto& field : row.fields)
+		{
+			std::string valueStr = std::visit([](auto&& arg) -> std::string {
+				using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, std::monostate>)
+                    return "NULL";
+                else if constexpr (std::is_same_v<T, int>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, double>)
+                    return std::to_string(arg);
+                else if constexpr (std::is_same_v<T, std::string>)
+                    return arg;
+                else
+                    return "UNKNOWN";
+				}, field.value);
+			logger.info("   " + field.name + " = " + valueStr);
+		}
+	}
+
+    execEngine.shutdown();
+    */
+
+    logger.info("");
+    logger.info("");
+    logger.info("Test Execution::BasicExecutor:");
+
+    Xale::Storage::BinaryFileManager execFm;
+	Xale::Storage::FileStorageEngine execEngine(execFm, "debug-engine-storage.bin");
+	
+    if (!execEngine.startup())
+	{
+		logger.error("Executor StorageEngine startup failed");
+		return -1;
+	}
+	
+    // Setup parser
+    Xale::Query::BasicTokenizer parserTokenizer;
+    Xale::Query::BasicParser parser(&parserTokenizer);
+
+    // Setup executor
+    Xale::Execution::TableManager tableManager(execEngine);
+	Xale::Execution::BasicExecutor executor(tableManager);
+
+    // Setup engine
+    Xale::Engine::QueryEngine queryEngine(&parser, &executor);
+
+    logger.info("");
+    logger.info("=== Testing QueryEngine with different statement types ===");
+    logger.info("");
+
+    queryEngine.run("CREATE TABLE testTmp (id INT PRIMARY KEY, name STRING)");
+    logger.info(queryEngine.getResultsToString());
+
+    queryEngine.run("INSERT INTO testTmp VALUES 1, 'Alice'");
+    logger.info(queryEngine.getResultsToString());
+    
+    queryEngine.run("INSERT INTO testTmp VALUES 2, 'Bob'");
+    logger.info(queryEngine.getResultsToString());
+    
+    queryEngine.run("INSERT INTO testTmp VALUES 3, 'Charlie'");
+    logger.info(queryEngine.getResultsToString());
+
+    logger.info("");
+    queryEngine.run("SELECT * FROM testTmp WHERE id != 2");
+    logger.info("\n" + queryEngine.getResultsToString());
 
     execEngine.shutdown();
 
