@@ -81,6 +81,8 @@ namespace Xale::Query
     DECLARE_TOKENS(sql_operators,
         "*",
         ",",
+        "(",
+        ")",
         "=", 
         "!=",
         "<",

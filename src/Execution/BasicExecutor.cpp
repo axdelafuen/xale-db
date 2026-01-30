@@ -102,6 +102,33 @@ namespace Xale::Execution
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeCreate(Xale::Query::CreateStatement* stmt)
 	{
 		_tableManager.createTable(stmt->tableName);
+		
+		if (!stmt->columns.empty())
+		{
+			auto table = _tableManager.getTable(stmt->tableName);
+			if (table)
+			{
+				for (const auto& colDef : stmt->columns)
+				{
+					Xale::DataStructure::FieldType fieldType;
+					if (colDef.type == "INT" || colDef.type == "INTEGER")
+						fieldType = Xale::DataStructure::FieldType::Integer;
+					else if (colDef.type == "FLOAT" || colDef.type == "DOUBLE")
+						fieldType = Xale::DataStructure::FieldType::Float;
+					else if (colDef.type == "STRING" || colDef.type == "TEXT" || colDef.type == "VARCHAR")
+						fieldType = Xale::DataStructure::FieldType::String;
+					else
+						THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Unknown column type: " + colDef.type);
+					
+					table->addColumn(Xale::DataStructure::ColumnDefinition(
+						colDef.name,
+						fieldType,
+						colDef.isPrimaryKey
+					));
+				}
+			}
+		}
+		
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
 

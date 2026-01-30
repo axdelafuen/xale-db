@@ -139,11 +139,26 @@ namespace Xale::Query
     };
 
     /*
+     * @brief Column definition for CREATE TABLE statement structure
+     */
+    struct ColumnDefinitionStmt
+    {
+        std::string name;
+        std::string type;
+        bool isPrimaryKey;
+
+        ColumnDefinitionStmt() : isPrimaryKey(false) {}
+        ColumnDefinitionStmt(std::string n, std::string t, bool pk = false)
+            : name(std::move(n)), type(std::move(t)), isPrimaryKey(pk) {}
+    };
+
+    /*
      * @brief CREATE TABLE statement structure
      */
     struct CreateStatement : public Statement
     {
         std::string tableName;
+        std::vector<ColumnDefinitionStmt> columns;
         
         CreateStatement() : Statement(StatementType::Create) {}
     };

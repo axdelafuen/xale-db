@@ -352,6 +352,52 @@ namespace Xale::Query
         stmt->tableName = _currentToken.lexeme;
         advance();
 
+        if (match(TokenType::Operator) && _currentToken.lexeme == "(")
+        {
+            advance();
+
+            do
+            {
+                if (match(TokenType::Operator) && _currentToken.lexeme == ")")
+                    break;
+
+                expect(TokenType::Identifier, "Expected column name");
+                ColumnDefinitionStmt colDef;
+                colDef.name = _currentToken.lexeme;
+                advance();
+
+                expect(TokenType::Identifier, "Expected column type");
+                std::string typeUpper = _currentToken.lexeme;
+                std::transform(typeUpper.begin(), typeUpper.end(), typeUpper.begin(), ::toupper);
+                colDef.type = typeUpper;
+                advance();
+
+                if (matchIdentifier("PRIMARY"))
+                {
+                    advance();
+                    if (!matchIdentifier("KEY"))
+                        throwError("Expected KEY after PRIMARY");
+                    advance();
+                    colDef.isPrimaryKey = true;
+                }
+
+                stmt->columns.push_back(colDef);
+
+                if (match(TokenType::Operator) && _currentToken.lexeme == ",")
+                {
+                    advance();
+                }
+                else if (!(match(TokenType::Operator) && _currentToken.lexeme == ")"))
+                {
+                    throwError("Expected ',' or ')' in column definition");
+                }
+            } while (!(match(TokenType::Operator) && _currentToken.lexeme == ")") && !match(TokenType::EndOfInput));
+
+            if (!(match(TokenType::Operator) && _currentToken.lexeme == ")"))
+                throwError("Expected ')' after column definitions");
+            advance();
+        }
+
         return stmt;
     }
 
