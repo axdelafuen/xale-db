@@ -22,6 +22,7 @@ namespace Xale::Core
             const std::string& getExceptionLogLevel() const noexcept;
             const std::string& getLogOutputDirectory() const noexcept;
             const std::string& getLogFileNameFormat() const noexcept;
+            const std::string& getDataFilePath() const noexcept;
 
         private:
             static std::unique_ptr<ConfigurationHandler> instance;
@@ -38,6 +39,7 @@ namespace Xale::Core
             std::string _exceptionLogLevel;
             std::string _outputFilePath;
             std::string _fileNameFormat;
+            std::string _dataFilePath;
             bool _loaded = false;
     };
 }

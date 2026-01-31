@@ -1,20 +1,6 @@
 #include "Logger.h"
 
-#include "Core/ExceptionHandler.h"
-#include "Core/AssertException.h"
 #include "Core/Setup.h"
-#include "Storage/BinaryFileManager.h"
-#include "Storage/FileStorageEngine.h"
-#include "DataStructure/BPlusTree.h"
-#include "Query/BasicTokenizer.h"
-#include "Query/BasicParser.h"
-
-#include "DataStructure/ResultSet.h"
-#include "DataStructure/Table.h"
-
-#include "Execution/TableManager.h"
-#include "Execution/BasicExecutor.h"
-
 #include "Engine/QueryEngine.h"
 
 #include <vector>
@@ -29,34 +15,11 @@ int main()
 	// Setup logger
     auto& logger = Xale::Logger::Logger<void>::getInstance();
 
-	// Setup core systems
-    std::string error;
-    if (!Xale::Core::Init::setup(error))
-    {
-        logger.error("Setup failed: " + error);
+    // Setup config & engine
+    auto& setup = Xale::Core::Setup::getInstance();
+    if (!setup.initialize())
         return -1;
-    }
-
-    // Setup fileManagement
-    Xale::Storage::BinaryFileManager execFm;
-	Xale::Storage::FileStorageEngine execEngine(execFm, "debug-engine-storage.bin");
-	
-    if (!execEngine.startup())
-	{
-		logger.error("Executor StorageEngine startup failed");
-		return -1;
-	}
-	
-    // Setup parser
-    Xale::Query::BasicTokenizer parserTokenizer;
-    Xale::Query::BasicParser parser(&parserTokenizer);
-
-    // Setup executor
-    Xale::Execution::TableManager tableManager(execEngine, execFm);
-	Xale::Execution::BasicExecutor executor(tableManager);
-
-    // Setup engine
-    Xale::Engine::QueryEngine queryEngine(&parser, &executor);
+    auto& queryEngine = setup.getQueryEngine();
 
     // Create table and insert data (only if table doesn't exist)
     bool tableCreated = false;
@@ -111,7 +74,8 @@ int main()
     queryEngine.run("SELECT * FROM xaletesting WHERE key = 17");
     logger.info("\n" + queryEngine.getResultsToString());
 
-    execEngine.shutdown();
+    // Stop setup
+    setup.shutdown();
 
     return 0;
 }

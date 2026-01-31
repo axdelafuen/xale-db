@@ -1,12 +1,6 @@
 #include <Logger.h>
 
 #include "Core/Setup.h"
-#include "Storage/BinaryFileManager.h"
-#include "Storage/FileStorageEngine.h"
-#include "Query/BasicTokenizer.h"
-#include "Query/BasicParser.h"
-#include "Execution/TableManager.h"
-#include "Execution/BasicExecutor.h"
 #include "Engine/QueryEngine.h"
 
 #include <iostream>
@@ -26,33 +20,10 @@ namespace Xale
 int main()
 {
     auto& logger = Xale::Logger::Logger<Xale::Server>::getInstance();
-
-    std::string error;
-    if (!Xale::Core::Init::setup(error))
-    {
-        logger.error("Setup failed: " + error);
+    auto& setup = Xale::Core::Setup::getInstance();
+    if (!setup.initialize())
         return -1;
-    }
-    
-    // Setup Database Engine
-    Xale::Storage::BinaryFileManager execFm;
-	Xale::Storage::FileStorageEngine fileStorageEngine(execFm, "release-engine-storage.bin");
-    if (!fileStorageEngine.startup())
-	{
-		logger.error("Executor StorageEngine startup failed");
-		return -1;
-	}
-	
-    // Setup parser
-    Xale::Query::BasicTokenizer parserTokenizer;
-    Xale::Query::BasicParser parser(&parserTokenizer);
-
-    // Setup executor
-    Xale::Execution::TableManager tableManager(fileStorageEngine, execFm);
-	Xale::Execution::BasicExecutor executor(tableManager);
-
-    // Setup engine
-    Xale::Engine::QueryEngine queryEngine(&parser, &executor);
+    auto& queryEngine = setup.getQueryEngine();
 
     // Setup TCP Server
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -134,7 +105,7 @@ int main()
 
     // Cleanup
     close(server_fd);
-    fileStorageEngine.shutdown();
-
+    setup.shutdown();
+    
 	return 0;
 }

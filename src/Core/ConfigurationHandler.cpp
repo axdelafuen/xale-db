@@ -3,6 +3,7 @@
 namespace Xale::Core 
 {
     std::unique_ptr<ConfigurationHandler> ConfigurationHandler::instance = nullptr;
+
     bool ConfigurationHandler::loadFromFile(const std::string& path, std::string& outError) noexcept
     {
         outError.clear();
@@ -53,6 +54,25 @@ namespace Xale::Core
                 while ((pos = _outputFilePath.find("__ROOT__", pos)) != std::string::npos)
                 {
                     _outputFilePath.replace(pos, 8, root);
+                    pos += root.length();
+                }
+            }
+        }
+
+        if (!extractStringField(content, "DataFilePath", _dataFilePath))
+        {
+            outError = "Missing or invalid 'DataFilePath' in config";
+            return false;
+        }
+        else
+        {
+            const std::string root = Xale::Core::Helper::getExecutableFolderPath();
+            if (!root.empty())
+            {
+                size_t pos = 0;
+                while ((pos = _dataFilePath.find("__ROOT__", pos)) != std::string::npos)
+                {
+                    _dataFilePath.replace(pos, 8, root);
                     pos += root.length();
                 }
             }
@@ -121,6 +141,11 @@ namespace Xale::Core
     const std::string& ConfigurationHandler::getLogFileNameFormat() const noexcept 
     { 
         return _fileNameFormat; 
+    }
+
+    const std::string& ConfigurationHandler::getDataFilePath() const noexcept 
+    { 
+        return _dataFilePath; 
     }
 
     bool ConfigurationHandler::extractStringField(const std::string& text, const std::string& key, std::string& outValue)
