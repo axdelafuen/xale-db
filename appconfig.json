@@ -6,6 +6,7 @@
             "Exception": "Error"
         },
         "OutputFilePath": "__ROOT__/../Logs/",
-        "FileNameFormat": "__DD__-__MM__-__YYYY__-xale-db.log"
+        "FileNameFormat": "__DD__-__MM__-__YYYY__-xale-db.log",
+        "DataFilePath": "__ROOT__/release-engine-storage.bin"
     }
 }

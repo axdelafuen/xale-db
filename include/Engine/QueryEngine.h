@@ -14,6 +14,7 @@ namespace Xale::Engine
     class QueryEngine
     {
         public:
+            QueryEngine() = default;
             QueryEngine(
                 Xale::Query::IParser* parser, 
                 Xale::Execution::IExecutor* executor);
