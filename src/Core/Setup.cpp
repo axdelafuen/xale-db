@@ -9,6 +9,11 @@ namespace Xale::Core
     {
     }
 
+    Setup::~Setup()
+    {
+        shutdown();
+    }
+
     Setup& Setup::getInstance()
     {
         if (!_instance)
