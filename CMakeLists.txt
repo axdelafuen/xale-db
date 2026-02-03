@@ -58,3 +58,19 @@ add_custom_command(
             ${CMAKE_SOURCE_DIR}/appconfig.json
             $<TARGET_FILE_DIR:xale-db-debug>/appconfig.json
 )
+
+add_custom_command(
+    TARGET xale-db-server
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/appconfig.json
+            $<TARGET_FILE_DIR:xale-db-server>/appconfig.json
+)
+
+add_custom_command(
+    TARGET xale-db-cli
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/appconfig.json
+            $<TARGET_FILE_DIR:xale-db-cli>/appconfig.json
+)
