@@ -28,6 +28,9 @@ FetchContent_MakeAvailable(xale-logger)
 add_library(xale-db-core ${SOURCES})
 target_include_directories(xale-db-core PUBLIC ${INCLUDE_DIR})
 target_link_libraries(xale-db-core PUBLIC xale-logger)
+if(WIN32)
+    target_link_libraries(xale-db-core PUBLIC ws2_32)
+endif()
 
 # Debug
 add_executable(xale-db-debug ${DEBUG})
