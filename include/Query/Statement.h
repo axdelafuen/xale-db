@@ -19,6 +19,7 @@ namespace Xale::Query
         Delete,
         Create,
         Drop,
+        List,
         Unknown
     };
 
@@ -171,6 +172,15 @@ namespace Xale::Query
         std::string tableName;
 
         DropStatement() : Statement(StatementType::Drop) {}
+    };
+
+
+    /*
+     * @brief LIST TABLE statement structure
+     */
+    struct ListStatement : public Statement
+    {
+        ListStatement() : Statement(StatementType::List) {}
     };
 }
 

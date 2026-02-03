@@ -25,6 +25,7 @@ namespace Xale::Execution
 			case Xale::Query::StatementType::Delete: return executeDelete(static_cast<Xale::Query::DeleteStatement*>(statement));
 			case Xale::Query::StatementType::Create: return executeCreate(static_cast<Xale::Query::CreateStatement*>(statement));
 			case Xale::Query::StatementType::Drop: return executeDrop(static_cast<Xale::Query::DropStatement*>(statement));
+            case Xale::Query::StatementType::List: return executeList(static_cast<Xale::Query::ListStatement*>(statement));
             default: THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Unsupported statement type");
 		}
 	}
@@ -147,6 +148,30 @@ namespace Xale::Execution
             THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "Table does not exist");
 		return std::make_unique<Xale::DataStructure::ResultSet>();
 	}
+
+    std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::executeList(Xale::Query::ListStatement* stmt)
+    {
+        auto tableNames = _tableManager.getTableNames();
+		const std::string colIdentifier = "table_name";
+		const Xale::DataStructure::FieldType colType = Xale::DataStructure::FieldType::String;
+
+        if (tableNames.empty())
+            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "No table stored in database. Use CREATE TABLE to add table");
+
+        auto result = std::make_unique<Xale::DataStructure::ResultSet>();
+        
+        result->addColumn(Xale::DataStructure::ColumnDefinition(colIdentifier, colType));
+
+        for (const auto& tableName : tableNames)
+        {
+            Xale::DataStructure::Row row;
+            auto field = Xale::DataStructure::Field(colIdentifier, colType, tableName);
+            row.fields.push_back(field);
+            result->addRow(row);
+        }
+
+        return result;
+    }
 
 	Xale::DataStructure::FieldValue BasicExecutor::evaluateExpression(const Xale::Query::Expression& expr)
 	{

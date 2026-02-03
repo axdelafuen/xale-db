@@ -65,6 +65,8 @@ namespace Xale::Engine
                 return formatCreateResult();
             case Xale::Query::StatementType::Drop:
                 return formatDropResult();
+            case Xale::Query::StatementType::List:
+                return formatSelectResult();
             default:
                 return "Query executed";
         }

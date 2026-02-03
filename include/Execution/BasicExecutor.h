@@ -25,6 +25,7 @@ namespace Xale::Execution
             std::unique_ptr<Xale::DataStructure::ResultSet> executeDelete(Xale::Query::DeleteStatement* stmt);
             std::unique_ptr<Xale::DataStructure::ResultSet> executeCreate(Xale::Query::CreateStatement* stmt);
             std::unique_ptr<Xale::DataStructure::ResultSet> executeDrop(Xale::Query::DropStatement* stmt);
+            std::unique_ptr<Xale::DataStructure::ResultSet> executeList(Xale::Query::ListStatement* stmt);
 
             Xale::DataStructure::FieldValue evaluateExpression(const Xale::Query::Expression& expr);
             bool evaluateCondition(const Xale::DataStructure::Row& row, const Xale::Query::WhereClause* where);

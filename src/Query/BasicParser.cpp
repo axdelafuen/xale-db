@@ -157,6 +157,8 @@ namespace Xale::Query
             return parseCreate();
         else if (matchKeyword("DROP"))
             return parseDrop();
+        else if (matchKeyword("LIST"))
+            return parseList();
         else
         {
             throwError("Expected SQL statement (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP)");
@@ -424,6 +426,24 @@ namespace Xale::Query
 
         expect(TokenType::Identifier, "Expected table name");
         stmt->tableName = _currentToken.lexeme;
+        advance();
+
+        return stmt;
+    }
+
+    /*
+     * @brief Parse LIST statement
+     */
+    std::unique_ptr<ListStatement> BasicParser::parseList()
+    {
+        auto stmt = std::make_unique<ListStatement>();
+
+        expectKeyword("LIST", "Expected LIST keyword");
+        advance();
+
+        if (!match(TokenType::Identifier))
+            throwError("Expected TABLE keyword");
+
         advance();
 
         return stmt;
