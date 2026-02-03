@@ -11,7 +11,7 @@ namespace Xale::Client
             void start() override;
             std::string getInput(bool* isExit) override;
             void displayOutput(const std::string& output) override;
-            void close();
+            void close() override;
     };
 }
 

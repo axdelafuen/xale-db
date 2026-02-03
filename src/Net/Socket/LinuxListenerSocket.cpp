@@ -93,9 +93,15 @@ namespace Xale::Net
      */
     void LinuxListenerSocket::close()
     {
-        ::close(_socket);
-        _socket = -1;
-        ::close(_clientSocket);
-        _clientSocket = -1;
+        if (_socket != -1)
+        {
+            ::close(_socket);
+            _socket = -1;
+        }
+        if (_clientSocket != -1)
+        {
+            ::close(_clientSocket);
+            _clientSocket = -1;
+        }
     }
 }

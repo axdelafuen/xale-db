@@ -20,7 +20,7 @@ namespace Xale::Net
     {
         public:
             LinuxSocket();
-            bool connect(const std::string hostAddress, int port) override;
+            bool connect(const std::string hostAddress&, int port) override;
             int send(const std::string* data, size_t size) override; // should be SecurePaquet in the future
             int receive(std::string* buffer, size_t size) override;
             void close() override;

@@ -16,7 +16,7 @@ namespace Xale::Net
      * @param hostAddress 
      * @param port
      */
-    bool LinuxSocket::connect(const std::string hostAddress, int port)
+    bool LinuxSocket::connect(const std::string hostAddress&, int port)
     {
         _socket = socket(AF_INET, SOCK_STREAM, 0);
         if (_socket == -1) {
