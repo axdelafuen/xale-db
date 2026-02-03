@@ -21,7 +21,7 @@ namespace Xale::Core
 {
     class Setup {
         public:
-            ~Setup() = default;
+            ~Setup();
             static Setup& getInstance();
             bool initialize();
             void shutdown();
