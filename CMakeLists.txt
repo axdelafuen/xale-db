@@ -28,6 +28,9 @@ FetchContent_MakeAvailable(xale-logger)
 add_library(xale-db-core ${SOURCES})
 target_include_directories(xale-db-core PUBLIC ${INCLUDE_DIR})
 target_link_libraries(xale-db-core PUBLIC xale-logger)
+if(WIN32)
+    target_link_libraries(xale-db-core PUBLIC ws2_32)
+endif()
 
 # Debug
 add_executable(xale-db-debug ${DEBUG})
@@ -57,4 +60,20 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/appconfig.json
             $<TARGET_FILE_DIR:xale-db-debug>/appconfig.json
+)
+
+add_custom_command(
+    TARGET xale-db-server
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/appconfig.json
+            $<TARGET_FILE_DIR:xale-db-server>/appconfig.json
+)
+
+add_custom_command(
+    TARGET xale-db-cli
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/appconfig.json
+            $<TARGET_FILE_DIR:xale-db-cli>/appconfig.json
 )

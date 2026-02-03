@@ -1,4 +1,4 @@
-name: XaleDB CMake build & test
+name: XaleDB CMake build & test (linux)
 
 on:
   push:

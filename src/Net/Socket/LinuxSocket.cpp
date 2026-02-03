@@ -1,3 +1,5 @@
+#if defined(__linux__) || defined(linux) || defined(__GNUG__)
+
 #include "Net/Socket/LinuxSocket.h"
 
 namespace Xale::Net
@@ -78,3 +80,5 @@ namespace Xale::Net
         _socket = -1;
     }
 }
+
+#endif
