@@ -444,6 +444,10 @@ namespace Xale::Query
         if (!match(TokenType::Identifier))
             throwError("Expected TABLE keyword");
 
+        std::string upper = _currentToken.lexeme;
+        std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+        if (upper != "TABLE")
+            throwError("Expected TABLE keyword");
         advance();
 
         return stmt;

@@ -155,10 +155,11 @@ namespace Xale::Execution
 		const std::string colIdentifier = "table_name";
 		const Xale::DataStructure::FieldType colType = Xale::DataStructure::FieldType::String;
 
-        if (tableNames.empty())
-            THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "No table stored in database. Use CREATE TABLE to add table");
 
         auto result = std::make_unique<Xale::DataStructure::ResultSet>();
+
+        if (tableNames.empty())
+            return result;
         
         result->addColumn(Xale::DataStructure::ColumnDefinition(colIdentifier, colType));
 
