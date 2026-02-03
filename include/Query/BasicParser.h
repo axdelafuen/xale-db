@@ -44,6 +44,7 @@ namespace Xale::Query
             std::unique_ptr<DeleteStatement> parseDelete();
             std::unique_ptr<CreateStatement> parseCreate();
             std::unique_ptr<DropStatement> parseDrop();
+            std::unique_ptr<ListStatement> parseList();
 
             std::unique_ptr<Expression> parseExpression();
             std::unique_ptr<Expression> parseComparison();

@@ -46,7 +46,8 @@ namespace Xale::Query
     DECLARE_TOKENS(sql_definition_kw,
         "CREATE",
         "ALTER",
-        "DROP"
+        "DROP",
+        "LIST"
     );
 
     // Data manipulation keywords
@@ -89,6 +90,11 @@ namespace Xale::Query
         ">",
         "<=",
         ">="
+    );
+
+    // Special token
+    DECLARE_TOKENS(sql_end_query,
+        ";"
     );
 
     // For debug purpose
