@@ -9,7 +9,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Node struct for B+Tree implementation
      */
     template<typename TKey, typename TValue>

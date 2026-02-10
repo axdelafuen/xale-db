@@ -9,7 +9,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Interface for SQL parsers
      */
     class IParser

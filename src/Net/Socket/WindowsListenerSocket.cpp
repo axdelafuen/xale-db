@@ -4,7 +4,7 @@
 
 namespace Xale::Net
 {
-    /*
+    /**
      * @brief Constructor - Initialize Winsock
      */
     WindowsListenerSocket::WindowsListenerSocket()
@@ -23,7 +23,7 @@ namespace Xale::Net
         }
     }
 
-    /*
+    /**
      * @brief Destructor - Cleanup Winsock
      */
     WindowsListenerSocket::~WindowsListenerSocket()
@@ -34,7 +34,7 @@ namespace Xale::Net
         }
     }
 
-    /*
+    /**
      * @brief Opens the listener socket on the specified port
      * @param port Port number to listen on
      * @return true if successful, false otherwise
@@ -72,7 +72,7 @@ namespace Xale::Net
         return true;
     }
 
-    /*
+    /**
      * @brief Listens for incoming client connections and reads data into the buffer
      * @param buffer Buffer to store received data
      * @param size Maximum size to receive
@@ -117,7 +117,7 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /*
+    /**
      * @brief Responds to the connected client with the provided data
      * @param data Data to send
      * @param size Size of data
@@ -138,7 +138,7 @@ namespace Xale::Net
         return bytesSent;
     }
 
-    /*
+    /**
      * @brief Closes the listener and client sockets
      */
     void WindowsListenerSocket::close()

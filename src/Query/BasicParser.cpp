@@ -2,14 +2,14 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Default constructor
      */
     BasicParser::BasicParser()
         : _tokenizer(nullptr)
     {}
 
-    /*
+    /**
      * @brief Constructor with tokenizer
      * @param tokenizer Pointer to a tokenizer instance
      */
@@ -17,7 +17,7 @@ namespace Xale::Query
         : _tokenizer(tokenizer)
     {}
 
-    /*
+    /**
      * @brief Parse a SQL query string
      * @param query The SQL query to parse
      * @return Unique pointer to the parsed statement
@@ -40,7 +40,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Set the tokenizer to use
      * @param tokenizer Pointer to a tokenizer instance
      */
@@ -49,7 +49,7 @@ namespace Xale::Query
         _tokenizer = tokenizer;
     }
 
-    /*
+    /**
      * @brief Advance to next token
      */
     void BasicParser::advance()
@@ -58,7 +58,7 @@ namespace Xale::Query
             _currentToken = _tokenizer->nextToken();
     }
 
-    /*
+    /**
      * @brief Check if current token matches type
      * @param type Token type to match
      * @return True if matches, false otherwise
@@ -68,7 +68,7 @@ namespace Xale::Query
         return _currentToken.type == type;
     }
 
-    /*
+    /**
      * @brief Check if current token is a specific keyword
      * @param keyword Keyword to match (case-insensitive)
      * @return True if matches, false otherwise
@@ -87,7 +87,7 @@ namespace Xale::Query
         return upper == keyword;
     }
 
-    /*
+    /**
      * @brief Check if current token is a specific identifier
      * @param identifier Identifier to match (case-insensitive)
      * @return True if matches, false otherwise
@@ -103,7 +103,7 @@ namespace Xale::Query
         return upper == identifier;
     }
 
-    /*
+    /**
      * @brief Expect a specific token type or throw exception
      * @param type Expected token type
      * @param errorMsg Error message if expectation fails
@@ -115,7 +115,7 @@ namespace Xale::Query
             throwError(errorMsg);
     }
 
-    /*
+    /**
      * @brief Expect a specific keyword or throw exception
      * @param keyword Expected keyword
      * @param errorMsg Error message if expectation fails
@@ -127,7 +127,7 @@ namespace Xale::Query
             throwError(errorMsg);
     }
 
-    /*
+    /**
      * @brief Throw a parse error exception
      * @param message Error message
      * @throws DbException with parse error code
@@ -138,7 +138,7 @@ namespace Xale::Query
         THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ParseError, fullMessage);
     }
 
-    /*
+    /**
      * @brief Parse a SQL statement
      * @return Unique pointer to parsed statement
      * @throws DbException if statement is invalid
@@ -166,7 +166,7 @@ namespace Xale::Query
         }
     }
 
-    /*
+    /**
      * @brief Parse SELECT statement
      * @return Unique pointer to SelectStatement
      * @throws DbException if syntax is invalid
@@ -215,7 +215,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse INSERT statement
      * @return Unique pointer to InsertStatement
      * @throws DbException if syntax is invalid
@@ -256,7 +256,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse UPDATE statement
      * @return Unique pointer to UpdateStatement
      * @throws DbException if syntax is invalid
@@ -304,7 +304,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse DELETE statement
      * @return Unique pointer to DeleteStatement
      * @throws DbException if syntax is invalid
@@ -329,7 +329,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse CREATE statement
      * @return Unique pointer to CreateStatement
      * @throws DbException if syntax is invalid
@@ -403,7 +403,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse DROP statement
      * @return Unique pointer to DropStatement
      * @throws DbException if syntax is invalid
@@ -431,7 +431,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse LIST statement
      */
     std::unique_ptr<ListStatement> BasicParser::parseList()
@@ -453,7 +453,7 @@ namespace Xale::Query
         return stmt;
     }
 
-    /*
+    /**
      * @brief Parse an expression
      * @return Unique pointer to Expression
      * @throws DbException if syntax is invalid
@@ -463,7 +463,7 @@ namespace Xale::Query
         return parseComparison();
     }
 
-    /*
+    /**
      * @brief Parse a comparison expression
      * @return Unique pointer to Expression
      * @throws DbException if syntax is invalid
@@ -500,7 +500,7 @@ namespace Xale::Query
         return left;
     }
 
-    /*
+    /**
      * @brief Parse a primary expression (identifier or literal)
      * @return Unique pointer to Expression
      * @throws DbException if syntax is invalid
@@ -532,7 +532,7 @@ namespace Xale::Query
         }
     }
 
-    /*
+    /**
      * @brief Parse WHERE clause
      * @return Unique pointer to WhereClause
      * @throws DbException if syntax is invalid

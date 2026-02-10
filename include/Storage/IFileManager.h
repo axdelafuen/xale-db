@@ -6,7 +6,7 @@
 
 namespace Xale::Storage 
 {
-    /*
+    /**
 	 * @brief Interface for file management operations
      */
     class IFileManager

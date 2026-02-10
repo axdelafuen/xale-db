@@ -2,7 +2,7 @@
 
 namespace Xale::Engine
 {
-    /*
+    /**
      * @brief Constructor of the XaleDB SQL QueryEngine
      * @param parser a SQL string parser
      * @param executor a SQL statement executor
@@ -16,7 +16,7 @@ namespace Xale::Engine
         _lastStatementType(Xale::Query::StatementType::Unknown)
     {}
    
-    /*
+    /**
      * @brief Run the given string query
      * @param sqlQuery The SQL string query
      * @return True if the execution run well, False otherwise
@@ -30,7 +30,7 @@ namespace Xale::Engine
         return true;
     }
 
-    /*
+    /**
      * @brief Get the last runned query results
      * @return a ResultSet of the last runned query
      */
@@ -42,7 +42,7 @@ namespace Xale::Engine
             return nullptr;
     }
 
-    /*
+    /**
      * @brief Get the last runned query results as a formatted string
      * @return a string representing the last runned query results
      */

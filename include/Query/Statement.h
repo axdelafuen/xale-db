@@ -8,7 +8,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Types of SQL statements
      */
     enum class StatementType
@@ -23,7 +23,7 @@ namespace Xale::Query
         Unknown
     };
 
-    /*
+    /**
      * @brief Types of expression nodes
      */
     enum class ExpressionType
@@ -35,13 +35,13 @@ namespace Xale::Query
         Wildcard
     };
 
-    /*
+    /**
      * @brief Forward declarations
      */
     struct Expression;
     struct BinaryExpression;
 
-    /*
+    /**
      * @brief Base expression structure
      */
     struct Expression
@@ -55,7 +55,7 @@ namespace Xale::Query
             : type(t), value(std::move(val)) {}
     };
 
-    /*
+    /**
      * @brief Binary expression
      */
     struct BinaryExpression
@@ -69,7 +69,7 @@ namespace Xale::Query
             : left(std::move(l)), op(std::move(operation)), right(std::move(r)) {}
     };
 
-    /*
+    /**
      * @brief WHERE clause representation
      */
     struct WhereClause
@@ -81,7 +81,7 @@ namespace Xale::Query
             : condition(std::move(cond)) {}
     };
 
-    /*
+    /**
      * @brief Base statement structure
      */
     struct Statement
@@ -92,7 +92,7 @@ namespace Xale::Query
         virtual ~Statement() = default;
     };
 
-    /*
+    /**
      * @brief SELECT statement structure
      */
     struct SelectStatement : public Statement
@@ -104,7 +104,7 @@ namespace Xale::Query
         SelectStatement() : Statement(StatementType::Select) {}
     };
 
-    /*
+    /**
      * @brief INSERT statement structure
      */
     struct InsertStatement : public Statement
@@ -116,7 +116,7 @@ namespace Xale::Query
         InsertStatement() : Statement(StatementType::Insert) {}
     };
 
-    /*
+    /**
      * @brief UPDATE statement structure
      */
     struct UpdateStatement : public Statement
@@ -128,7 +128,7 @@ namespace Xale::Query
         UpdateStatement() : Statement(StatementType::Update) {}
     };
 
-    /*
+    /**
      * @brief DELETE statement structure
      */
     struct DeleteStatement : public Statement
@@ -139,7 +139,7 @@ namespace Xale::Query
         DeleteStatement() : Statement(StatementType::Delete) {}
     };
 
-    /*
+    /**
      * @brief Column definition for CREATE TABLE statement structure
      */
     struct ColumnDefinitionStmt
@@ -153,7 +153,7 @@ namespace Xale::Query
             : name(std::move(n)), type(std::move(t)), isPrimaryKey(pk) {}
     };
 
-    /*
+    /**
      * @brief CREATE TABLE statement structure
      */
     struct CreateStatement : public Statement
@@ -164,7 +164,7 @@ namespace Xale::Query
         CreateStatement() : Statement(StatementType::Create) {}
     };
 
-    /*
+    /**
      * @brief DROP TABLE statement structure
      */
     struct DropStatement : public Statement
@@ -175,7 +175,7 @@ namespace Xale::Query
     };
 
 
-    /*
+    /**
      * @brief LIST TABLE statement structure
      */
     struct ListStatement : public Statement

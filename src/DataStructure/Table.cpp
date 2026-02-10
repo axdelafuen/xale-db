@@ -2,7 +2,7 @@
 
 namespace Xale::DataStructure
 {
-	/*
+	/**
 	 * @brief Constructor
 	 * @param name Table name
 	 */
@@ -10,7 +10,7 @@ namespace Xale::DataStructure
 		:_name(name)
 	{}
 
-	/*
+	/**
 	 * @brief Get table name
 	 * @return Table name
 	 */
@@ -19,7 +19,7 @@ namespace Xale::DataStructure
 		return _name;
 	}
 
-	/*
+	/**
 	 * @brief Get schema
 	 * @return Vector of column definitions
 	 */
@@ -28,7 +28,7 @@ namespace Xale::DataStructure
 		return _schema;
 	}
 
-	/*
+	/**
 	 * @brief Get all rows
 	 * @return Vector of rows
 	 */
@@ -37,7 +37,7 @@ namespace Xale::DataStructure
 		return _rows;
 	}
 
-	/*
+	/**
 	 * @brief Get row count
 	 * @return Number of rows
 	 */
@@ -46,7 +46,7 @@ namespace Xale::DataStructure
 		return _rows.size();
 	}
 
-	/*
+	/**
 	 * @brief Get column count
 	 * @return Number of columns
 	 */
@@ -55,7 +55,7 @@ namespace Xale::DataStructure
 		return _schema.size();
 	}
 
-	/*
+	/**
 	 * @brief Check if empty
 	 * @return True if empty
 	 */
@@ -64,7 +64,7 @@ namespace Xale::DataStructure
 		return _rows.empty();
 	}
 
-	/*
+	/**
 	 * @brief Check if mutable
 	 * @return Always true for Table
 	 */
@@ -73,7 +73,7 @@ namespace Xale::DataStructure
 		return true;
 	}
 
-	/*
+	/**
 	 * @brief Add column definition
 	 * @param column Column definition
 	 */
@@ -82,7 +82,7 @@ namespace Xale::DataStructure
 		_schema.push_back(column);
 	}
 
-	/*
+	/**
 	 * @brief Insert a row
 	 * @param row Row to insert
 	 * @return True if successful
@@ -98,7 +98,7 @@ namespace Xale::DataStructure
 		return true;
 	}
 
-	/*
+	/**
 	 * @brief Update rows matching condition
 	 * @param columnName Column to filter
 	 * @param value Value to match
@@ -147,7 +147,7 @@ namespace Xale::DataStructure
 		return updatedCount;
 	}
 
-	/*
+	/**
 	 * @brief Delete rows matching condition
 	 * @param columnName Column to filter
 	 * @param value Value to match
@@ -185,7 +185,7 @@ namespace Xale::DataStructure
 		return deletedCount;
 	}
 
-	/*
+	/**
 	 * @brief Find rows by condition
 	 * @param columnName Column name to filter
 	 * @param value Value to match
@@ -217,7 +217,7 @@ namespace Xale::DataStructure
 		return result;
 	}
 
-	/*
+	/**
 	 * @brief Serialize table to binary format
 	 * @return Vector of bytes containing serialized table
 	 */
@@ -295,7 +295,7 @@ namespace Xale::DataStructure
 		return buffer;
 	}
 
-	/*
+	/**
 	 * @brief Deserialize table from binary format
 	 * @param data Vector of bytes containing serialized table
 	 * @return Deserialized Table object

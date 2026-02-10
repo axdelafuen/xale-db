@@ -2,7 +2,7 @@
 
 namespace Xale::Execution
 {
-	/*
+	/**
 	 * @brief Constructor for TableManager
 	 * @param storage Reference to the storage engine
 	 * @param fileManager Reference to the file manager
@@ -13,7 +13,7 @@ namespace Xale::Execution
 		loadAllTables();
 	}
 
-	/*
+	/**
 	 * @brief Creates a new table with the given name
 	 * @param name Name of the table to create
 	 * @return Pointer to the created Xale::DataStructure::Table, or nullptr if it already exists
@@ -32,7 +32,7 @@ namespace Xale::Execution
 		return tablePtr;
 	}
 
-	/*
+	/**
 	 * @brief Drops the table with the given name
 	 * @param name Name of the table to drop
 	 * @return True if the table was dropped, false if it did not exist
@@ -48,7 +48,7 @@ namespace Xale::Execution
 		return result;
 	}
 
-	/*
+	/**
 	 * @brief Retrieves the table with the given name
 	 * @param name Name of the table to retrieve
 	 * @return Pointer to the Xale::DataStructure::Table, or nullptr if it does not exist
@@ -63,7 +63,7 @@ namespace Xale::Execution
 		return nullptr;
 	}
 
-	/*
+	/**
 	 * @brief Checks if a table with the given name exists
 	 * @param name Name of the table to check
 	 * @return True if the table exists, false otherwise
@@ -73,7 +73,7 @@ namespace Xale::Execution
 		return _tables.find(name) != _tables.end();
 	}
 
-	/*
+	/**
 	 * @brief Retrieves the names of all existing tables
 	 * @return Vector of table names
 	 */
@@ -87,7 +87,7 @@ namespace Xale::Execution
 		return names;
 	}
 
-	/*
+	/**
 	 * @brief Save all tables to disk
 	 * File format:
 	 * [4 bytes: table_count]
@@ -154,7 +154,7 @@ namespace Xale::Execution
 		_fileManager.sync();
 	}
 
-	/*
+	/**
 	 * @brief Load all tables from disk
 	 * File format:
 	 * [4 bytes: table_count]
@@ -208,7 +208,7 @@ namespace Xale::Execution
 		}
 	}
 
-	/*
+	/**
 	 * @brief Save a single table to disk
 	 * @param table The table to save
 	 */
@@ -221,7 +221,7 @@ namespace Xale::Execution
 		// This would need a proper file format with table directory/metadata
 	}
 
-	/*
+	/**
 	 * @brief Load a single table from disk
 	 * @param tableName Name of the table
 	 * @param data Serialized table data

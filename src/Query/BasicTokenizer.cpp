@@ -2,7 +2,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Set the input string to tokenize
      */
     void BasicTokenizer::setInput(const std::string& input) 
@@ -11,7 +11,7 @@ namespace Xale::Query
         reset();
     }
 
-    /*
+    /**
      * @brief Reset the cursor and the current token
      */
     void BasicTokenizer::reset()
@@ -20,7 +20,7 @@ namespace Xale::Query
         _hasPeeked = false;
     }
 
-    /*
+    /**
      * @brief Get the next token
      */
     Token BasicTokenizer::nextToken()
@@ -33,7 +33,7 @@ namespace Xale::Query
         return readToken();
     }
     
-    /*
+    /**
      * @brief Get the current token
      */
     Token BasicTokenizer::peekToken() const
@@ -46,7 +46,7 @@ namespace Xale::Query
         return _peekedToken;
     }
 
-    /*
+    /**
      * @brief Tokenize all the input
      */
     std::vector<Token> BasicTokenizer::tokenize()
@@ -64,7 +64,7 @@ namespace Xale::Query
         return tokens;
     }
 
-    /*
+    /**
      * @brief Core method of this class, logic of the tokenization
      * This method is private
      */

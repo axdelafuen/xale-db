@@ -7,7 +7,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
 	 * @brief BPlus Tree implementation
      */
 	template <typename TKey, typename TValue>
@@ -30,7 +30,7 @@ namespace Xale::DataStructure
 			void borrowFromNext(Node<TKey, TValue>* node, int index);
 	};
 
-	/*
+	/**
 	 * @brief B+Tree constructor
 	 * @param maxKeys Maximum number of keys per node
 	 */
@@ -40,7 +40,7 @@ namespace Xale::DataStructure
 		_keysMax(maxKeys)
 	{}
 
-	/*
+	/**
 	 * @brief Insert a key-value pair into the B+ Tree
 	 * @param key The key to insert
 	 * @param value The value associated with the key
@@ -69,7 +69,7 @@ namespace Xale::DataStructure
         }
 	}
 
-	/*
+	/**
 	 * @brief Remove a key from the B+ Tree
 	 * @param key The key to remove
 	 * @return True if removal is successful, false otherwise
@@ -90,7 +90,7 @@ namespace Xale::DataStructure
         return false;
 	}
 
-	/*
+	/**
 	 * @brief Search for a key in the B+ Tree
 	 * @param key The key to search for
 	 * @return Pointer to the value associated with the key, or nullptr if not found

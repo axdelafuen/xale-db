@@ -2,7 +2,7 @@
 
 namespace Xale::Execution
 {
-	/*
+	/**
 	 * @brief Constructs a BasicExecutor with a reference to the TableManager.
 	 * @param tableManager Reference to the TableManager for managing database tables.
 	 */
@@ -10,7 +10,7 @@ namespace Xale::Execution
 		: _tableManager(tableManager)
 	{}
 
-	/*
+	/**
 	 * @brief Executes a given SQL statement and returns the result set.
 	 * @param statement Pointer to the SQL statement to be executed.
 	 * @return A unique pointer to the ResultSet containing the results of the execution.
