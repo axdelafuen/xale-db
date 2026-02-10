@@ -10,7 +10,7 @@ namespace Xale::Client
         std::cout << "CLI Client started. Type 'exit' to quit." << std::endl;
     }
 
-    /*
+    /**
      * @brief Gets input from the command line
      */
     std::string CLIClient::getInput(bool* isExit)
@@ -36,7 +36,7 @@ namespace Xale::Client
         }
     }
 
-    /*
+    /**
      * @brief Displays output to the command line
      */
     void CLIClient::displayOutput(const std::string& output)
@@ -44,7 +44,7 @@ namespace Xale::Client
         std::cout << output << std::endl;
     }
 
-    /*
+    /**
      * @brief Closes the client
      */
     void CLIClient::close()

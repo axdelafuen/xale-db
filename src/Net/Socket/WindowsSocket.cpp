@@ -4,7 +4,7 @@
 
 namespace Xale::Net
 {
-    /*
+    /**
      * @brief Constructor - Initialize Winsock
      */
     WindowsSocket::WindowsSocket() :
@@ -22,7 +22,7 @@ namespace Xale::Net
         }
     }
 
-    /*
+    /**
      * @brief Destructor - Cleanup Winsock
      */
     WindowsSocket::~WindowsSocket()
@@ -33,7 +33,7 @@ namespace Xale::Net
         }
     }
 
-    /*
+    /**
      * @brief Connect a socket to a host/port
      * @param hostAddress IP address or hostname
      * @param port Port number
@@ -73,7 +73,7 @@ namespace Xale::Net
         return true;
     }
 
-    /*
+    /**
      * @brief Send data through the socket
      * @param data Data to send
      * @param size Size of data
@@ -94,7 +94,7 @@ namespace Xale::Net
         return result;
     }
 
-    /*
+    /**
      * @brief Receive data from the socket
      * @param buffer Buffer to store received data
      * @param size Maximum size to receive
@@ -122,7 +122,7 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /*
+    /**
      * @brief Close the socket
      */
     void WindowsSocket::close()

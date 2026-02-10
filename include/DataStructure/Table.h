@@ -10,7 +10,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Mutable and persistent dataset
      */
 	class Table : public IDataTemplate

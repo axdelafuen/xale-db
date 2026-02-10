@@ -10,7 +10,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Abstract base class for data collections
      * Base for Table, ResultSet, View, Index, etc.
      */

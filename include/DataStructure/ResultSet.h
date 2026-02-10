@@ -6,7 +6,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Read-only temporary dataset
      */
     class ResultSet : public IDataTemplate

@@ -7,7 +7,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Type of data in a field
      */
     enum class FieldType
@@ -18,12 +18,12 @@ namespace Xale::DataStructure
         Null
     };
 
-    /*
+    /**
      * @brief Variant type for field values
      */
     using FieldValue = std::variant<int, double, std::string, std::monostate>;
 
-    /*
+    /**
      * @brief A single field in a row
      */
     struct Field
@@ -38,7 +38,7 @@ namespace Xale::DataStructure
         }
     };
 
-    /*
+    /**
      * @brief A row of data
      */
     struct Row
@@ -49,7 +49,7 @@ namespace Xale::DataStructure
         explicit Row(std::vector<Field> f) : fields(std::move(f)) {}
     };
 
-    /*
+    /**
      * @brief Column definition
      */
     struct ColumnDefinition

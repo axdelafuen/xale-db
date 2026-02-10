@@ -2,14 +2,14 @@
 
 namespace Xale::Storage
 {
-    /*
+    /**
 	 * @brief Constructor for BinaryFileManager
      */
     BinaryFileManager::BinaryFileManager() : 
         _logger(Xale::Logger::Logger<BinaryFileManager>::getInstance())
     {}
 
-	/*
+	/**
      * @brief Destructor for BinaryFileManager
 	 */
     BinaryFileManager::~BinaryFileManager()
@@ -20,7 +20,7 @@ namespace Xale::Storage
 	    }
     }
 
-    /*
+    /**
 	 * @brief Opens a binary file at the specified path
 	 * @param path The file path to open
 	 * @return true if the file is opened successfully, false otherwise
@@ -58,7 +58,7 @@ namespace Xale::Storage
         return true;
     }
 
-    /*
+    /**
 	 * @brief Closes the currently opened binary file
      */
     void BinaryFileManager::close()
@@ -70,7 +70,7 @@ namespace Xale::Storage
         }
     }
 
-    /*
+    /**
 	 * @brief Reads data from the binary file at the specified offset into the provided buffer
 	 * @param offset The offset in the file to start reading from
 	 * @param buffer The buffer to read data into
@@ -110,7 +110,7 @@ namespace Xale::Storage
         return static_cast<std::size_t>(_file.gcount());
     }
 
-    /*
+    /**
 	 * @brief Writes data to the binary file at the specified offset from the provided buffer
 	 * @param offset The offset in the file to start writing to
 	 * @param buffer The buffer containing data to write
@@ -157,7 +157,7 @@ namespace Xale::Storage
         return size;
     }
 
-    /*
+    /**
 	 * @brief Synchronizes the binary file to ensure all data is written to disk
 	 * @return true if the synchronization is successful, false otherwise
      */
@@ -175,7 +175,7 @@ namespace Xale::Storage
         return static_cast<bool>(_file);
     }
 
-    /*
+    /**
 	 * @brief Gets the size of the binary file
      */
     std::uint64_t BinaryFileManager::size() const

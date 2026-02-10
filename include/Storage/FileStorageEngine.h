@@ -14,7 +14,7 @@
 
 namespace Xale::Storage 
 {
-    /*
+    /**
 	 * @brief Implementation of the storage engine
      */
     class FileStorageEngine : public IStorageEngine

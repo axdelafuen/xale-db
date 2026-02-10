@@ -2,7 +2,7 @@
 
 namespace Xale::DataStructure
 {
-    /*
+    /**
      * @brief Constructor
      * @param name Result set name (optional)
      */
@@ -10,7 +10,7 @@ namespace Xale::DataStructure
         :_name(name)
     {}
 
-    /*
+    /**
      * @brief Get result set name
      * @return Name
      */
@@ -19,7 +19,7 @@ namespace Xale::DataStructure
         return _name;
 	}
 
-    /*
+    /**
      * @brief Get schema
      * @return Vector of column definitions
      */
@@ -28,7 +28,7 @@ namespace Xale::DataStructure
         return _schema;
 	}
 
-    /*
+    /**
      * @brief Get all rows
      * @return Vector of rows
      */
@@ -37,7 +37,7 @@ namespace Xale::DataStructure
         return _rows;
     }
 
-    /*
+    /**
      * @brief Get row count
      * @return Number of rows
      */
@@ -46,7 +46,7 @@ namespace Xale::DataStructure
         return _rows.size();
     }
 
-    /*
+    /**
      * @brief Get column count
      * @return Number of columns
      */
@@ -55,7 +55,7 @@ namespace Xale::DataStructure
         return _schema.size();
     }
 
-    /*
+    /**
      * @brief Check if empty
      * @return True if empty
      */
@@ -64,7 +64,7 @@ namespace Xale::DataStructure
         return _rows.empty();
 	}
     
-    /*
+    /**
      * @brief Check if mutable
      * @return Always false for ResultSet
      */
@@ -73,7 +73,7 @@ namespace Xale::DataStructure
 		return false;
 	}
 
-    /*
+    /**
      * @brief Add column definition (used by executor)
      * @param column Column definition
      */
@@ -82,7 +82,7 @@ namespace Xale::DataStructure
         _schema.push_back(column);
     }
 
-    /*
+    /**
      * @brief Add a row (used by executor)
      * @param row Row to add
      */
@@ -91,7 +91,7 @@ namespace Xale::DataStructure
         _rows.push_back(row);
     }
 
-    /*
+    /**
      * @brief Get a specific row
      * @param index Row index
      * @return Reference to the row

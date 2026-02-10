@@ -8,7 +8,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
 	 * @brief Interface for SQL tokenizer that converts an input string into a sequence of tokens.
      */
     class ITokenizer

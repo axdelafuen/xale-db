@@ -6,7 +6,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Types of possible tokens
      */
     enum class TokenType
@@ -24,7 +24,7 @@ namespace Xale::Query
         Unknown
     };
 
-    /*
+    /**
      * @brief Token struct defined by type, value and pos
      */
     struct Token
@@ -34,7 +34,7 @@ namespace Xale::Query
         size_t position;
     };
 
-    /* --------------------------------------------------
+    /** --------------------------------------------------
      * SQL (Basic) Keywords declaration
      * --------------------------------------------------
      */
@@ -98,7 +98,7 @@ namespace Xale::Query
     );
 
     // For debug purpose
-    /*
+    /**
 	 * @brief Convert TokenType to string
 	 * @return string representation of TokenType
      */

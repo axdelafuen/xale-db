@@ -4,7 +4,7 @@
 
 namespace Xale::Net
 {
-    /*
+    /**
      * @brief Constructor
      */
     LinuxSocket::LinuxSocket() :
@@ -13,7 +13,7 @@ namespace Xale::Net
         _address({})
     {}
 
-    /*
+    /**
      * @brief Connect a socket to a host/port
      * @param hostAddress 
      * @param port
@@ -44,7 +44,7 @@ namespace Xale::Net
         return true;
     }
 
-    /*
+    /**
      * @brief Send data through the socket
      * @param data
      * @param size
@@ -54,7 +54,7 @@ namespace Xale::Net
         return ::send(_socket, data->c_str(), size, 0);
     }
 
-    /*
+    /**
      * @brief Receive data from the socket
      * @param buffer 
      * @param size
@@ -71,7 +71,7 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /*
+    /**
      * @brief Close the socket
      */
     void LinuxSocket::close()

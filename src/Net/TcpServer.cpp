@@ -2,7 +2,7 @@
 
 namespace Xale::Net
 {
-    /*
+    /**
      * @brief Constructor
      */
     TcpServer::TcpServer(Xale::Engine::QueryEngine& queryEngine) :
@@ -11,7 +11,7 @@ namespace Xale::Net
         _queryEngine(queryEngine)
     {}
 
-    /*
+    /**
      * @brief Destructor
      */
     TcpServer::~TcpServer()
@@ -19,7 +19,7 @@ namespace Xale::Net
         stop();
     }
 
-    /*
+    /**
      * @brief Starts the TCP server on the specified port
      */
     bool TcpServer::start(int port)
@@ -63,7 +63,7 @@ namespace Xale::Net
         return true;
     }
 
-    /*
+    /**
      * @brief Stops the TCP server
      */
     void TcpServer::stop()

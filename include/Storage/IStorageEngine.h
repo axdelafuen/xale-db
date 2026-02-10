@@ -5,7 +5,7 @@
 
 namespace Xale::Storage 
 {
-    /*
+    /**
 	 * @brief Interface for storage engine operations
      */
     class IStorageEngine

@@ -8,7 +8,7 @@
 
 namespace Xale::Query
 {
-    /*
+    /**
      * @brief Basic implementation of SQL tokenizer
 	 */
     class BasicTokenizer : public ITokenizer
