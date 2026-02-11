@@ -1,0 +1,115 @@
+/** \page contribute Contributing
+
+## How to Contribute
+
+Contributions to XaleDB are welcome! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
+
+### Getting Started
+
+1. **Fork the Repository**
+
+```sh
+git clone https://github.com/axdelafuen/xale-db.git
+cd xale-db
+```
+
+2. **Set Up the Development Environment**
+
+```sh
+# Build the project
+cmake -B ./build
+cmake --build ./build
+
+# Run tests to ensure everything works
+./build/xale-db-tests
+```
+
+3. **Create a Branch**
+
+```sh
+git checkout -b feature/#issueN-your-feature-name
+```
+
+## Development Guidelines
+
+### Code Style
+
+- Follow C++17 standards
+- Use meaningful variable and function names
+- Add comments for complex logic
+- Keep functions focused and modular
+
+### Project Structure
+
+```
+xale-db/
+├── include/           # Header files
+│   ├── Client/        # Client interfaces
+│   ├── Core/          # Core utilities
+│   ├── DataStructure/ # Data structures (B+ tree, tables)
+│   ├── Engine/        # Database engine
+│   ├── Execution/     # Query execution
+│   ├── Net/           # Network/server components
+│   ├── Query/         # Query parsing and tokenization
+│   ├── Security/      # Authentication and security
+│   └── Storage/       # Storage engines
+├── src/               # Implementation files (mirrors include/)
+├── apps/              # Application entry points
+│   ├── cli/           # CLI client
+│   ├── server/        # Server mode
+│   └── debug/         # Debug mode
+└── tests/             # Test files (mirrors include/)
+```
+
+### Adding Features
+
+1. Make sure your feature is linked to an active issue. (find active issue [here](https://github.com/axdelafuen/xale-db/issues))
+
+2. **Implement in the appropriate layer:**
+   - Query parsing: `Query/` directory
+   - Execution logic: `Execution/` directory
+   - Storage operations: `Storage/` directory
+   - Data structures: `DataStructure/` directory
+   - ...
+
+3. **Comment** your code using _javadoc_ style
+
+4. **Write tests** for your feature in the corresponding `tests/` subdirectory
+
+5. **Update documentation** if adding new functionality
+
+### Testing
+
+Before submitting changes:
+
+```sh
+# Build the project
+cmake --build ./build
+
+# Run all tests
+./build/xale-db-tests
+
+# Test with CLI client
+./build/xale-db-server
+./build/xale-db-cli // run queries using CLI
+```
+
+### Submitting Changes
+
+1. **Commit your changes**
+   ```sh
+   git add .
+   git commit -m "Brief description of your changes"
+   ```
+
+2. **Push to your fork**
+   ```sh
+   git push origin feature/your-feature-name
+   ```
+
+3. **Create a Pull Request**
+   - Provide a clear description of your changes
+   - Reference any related issues
+   - Ensure all tests pass
+
+*/

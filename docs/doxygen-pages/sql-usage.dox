@@ -1,4 +1,4 @@
-# SQL commands usage
+/** \page sql-commands-usage SQL commands usage
 
 ## Types
 
@@ -68,3 +68,5 @@ WHERE `col_x_name` [OPERATOR] `value`
 ### Joins
 
 _Not implemented yet!_
+
+*/
