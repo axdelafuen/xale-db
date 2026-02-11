@@ -9,13 +9,16 @@
  */
 int main()
 {
+    // Setup
     auto& logger = Xale::Logger::Logger<Xale::Net::TcpServer>::getInstance();
     auto& setup = Xale::Core::Setup::getInstance();
     if (!setup.initialize())
         return -1;
-    auto& queryEngine = setup.getQueryEngine();
 
+    // Start server
+    auto& queryEngine = setup.getQueryEngine();
     Xale::Net::TcpServer server(queryEngine);
+
     if (!server.start(8080)) {
         logger.error("Failed to start the server");
         return -1;

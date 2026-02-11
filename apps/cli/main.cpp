@@ -1,4 +1,4 @@
-#include "Net/Socket/SocketFactory.h"
+#include "Net/TcpClient.h"
 #include "Client/CLIClient.h"
 
 #include <iostream>
@@ -9,10 +9,10 @@
  */
 int main(int argc, char* argv[])
 {
-    auto socket = Xale::Net::SocketFactory::createSocket();
     auto cliClient = Xale::Client::CLIClient(); // use abstraction in the future
 
-    if (!socket->connect("127.0.0.1", 8080)) {
+    auto tcpClient = Xale::Net::TcpClient();
+    if (!tcpClient.connect("127.0.0.1", 8080)) {
         std::cerr << "Connection failed. Is the server running?" << std::endl;
         return -1;
     }
@@ -28,10 +28,10 @@ int main(int argc, char* argv[])
             break;
         }
 
-        socket->send(&query, query.length());
+        tcpClient.send(&query, query.length());
 
         std::string buffer;
-        int bytes_read = socket->receive(&buffer, 4096);
+        int bytes_read = tcpClient.receive(&buffer, 4096);
         
         if (bytes_read > 0) {
             cliClient.displayOutput(buffer);
@@ -44,6 +44,6 @@ int main(int argc, char* argv[])
         }
     }
 
-    socket->close();
+    tcpClient.close();
 	return 0;
 }
