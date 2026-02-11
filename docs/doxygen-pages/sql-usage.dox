@@ -1,5 +1,7 @@
 /** \page sql-commands-usage SQL commands usage
 
+_for now_ `,` _is not recognized!_
+
 ## Types
 
 - `INT`
