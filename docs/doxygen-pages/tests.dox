@@ -19,18 +19,18 @@ cmake --build ./build
 
 The test suite is organized by component:
 
-- **Storage Tests**: File management and storage engine functionality
+- __Storage Tests__: File management and storage engine functionality
   - `FileManagerTests.h` - Binary file operations
   - `StorageEngineTests.h` - Storage engine operations
 
-- **Data Structure Tests**: Core data structures
+- __Data Structure Tests__: Core data structures
   - `BPlusTreeTests.h` - B+ tree indexing operations
 
-- **Query Tests**: Query parsing and tokenization
+- __Query Tests__: Query parsing and tokenization
   - `BasicTokenizerTests.h` - SQL tokenization
   - `BasicParserTests.h` - SQL parsing
 
-- **Execution Tests**: Query execution components
+- __Execution Tests__: Query execution components
   - `TableManagerTests.h` - Table management operations
   - `BasicExecutorTests.h` - SQL statement execution
 
@@ -38,9 +38,9 @@ The test suite is organized by component:
 
 Tests use a custom lightweight testing framework defined in `TestsHelper.h`:
 
-- **Registration**: Tests are automatically registered using the `DECLARE_TEST` macro
-- **Execution**: All tests run sequentially with pass/fail reporting
-- **Output**: Clear console output showing test results
+- __Registration__: Tests are automatically registered using the `DECLARE_TEST` macro
+- __Execution__: All tests run sequentially with pass/fail reporting
+- __Output__: Clear console output showing test results
 
 ### Writing New Tests
 

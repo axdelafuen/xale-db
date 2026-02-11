@@ -1,0 +1,358 @@
+/** \page security Security Implementation
+
+\tableofcontents
+
+\section security_overview Overview
+
+1. __TLS/SSL__ for secure TCP communication
+2. __Data encryption__ at rest
+3. __Username/Password authentication__
+4. __Token-based session management__
+
+\section security_roadmap Security Roadmap
+
+\subsection phase1 Phase 1: Custom Secure Channel Implementation
+
+\subsubsection tcp_custom 1.1 Build Your Own TLS-like Security Layer
+__Priority: CRITICAL__
+
+- __Objective:__ Implement a custom encryption layer for TCP communications (educational approach)
+- __Implementation Overview:__
+  Instead of using TLS/SSL, build a simplified secure channel with:
+  1. __Symmetric encryption__ (AES-256) for data transmission
+  2. __Key exchange__ (Diffie-Hellman) to establish shared secret
+  3. __Message authentication__ (HMAC-SHA256) to prevent tampering
+  4. __Handshake protocol__ to negotiate encryption parameters
+
+\subsubsection tcp_handshake 1.2 Secure Handshake Protocol
+__Priority: CRITICAL__
+
+- __Objective:__ Establish a shared encryption key between client and server
+- __Handshake Flow:__
+  ```
+  Client -> Server: CLIENT_HELLO (client_random, DH_public_key)
+  Server -> Client: SERVER_HELLO (server_random, DH_public_key)
+  [Both compute shared secret and derive encryption/MAC keys]
+  Client -> Server: CLIENT_FINISHED (HMAC)
+  Server -> Client: SERVER_FINISHED (HMAC)
+  [Encrypted communication begins]
+  ```
+
+\subsubsection tcp_crypto 1.3 Cryptographic Components
+__Priority: CRITICAL__
+
+- __Components to implement:__
+  1. **DHKeyExchange** - Diffie-Hellman key exchange (use OpenSSL BIGNUM)
+  2. **AESCipher** - AES-256-CBC encryption with random IVs
+  3. **HMAC** - HMAC-SHA256 for message authentication
+  4. **HKDF** - Key derivation from shared secret
+
+\subsubsection tcp_protocol 1.4 Secure Message Format
+__Priority: HIGH__
+
+- __Message Structure:__ Length (4B) + IV (16B) + Encrypted Data + HMAC (32B)
+- __Flow:__ Encrypt → Compute HMAC → Send | Receive → Verify HMAC → Decrypt
+  
+- __Files to create:__
+  - `include/Security/Crypto/DHKeyExchange.h` - Diffie-Hellman implementation
+  - `include/Security/Crypto/AESCipher.h` - AES encryption wrapper
+  - `include/Security/Crypto/HMAC.h` - Message authentication
+  - `include/Security/Crypto/HKDF.h` - Key derivation
+  - `include/Net/Socket/SecureSocket.h` - Secure socket wrapper
+  - `include/Net/Socket/SecureListenerSocket.h` - Secure listener
+  - `src/Security/Crypto/DHKeyExchange.cpp`
+  - `src/Security/Crypto/AESCipher.cpp`
+  - `src/Security/Crypto/HMAC.cpp`
+  - `src/Security/Crypto/HKDF.cpp`
+  - `src/Net/Socket/SecureSocket.cpp`
+  - `src/Net/Socket/SecureListenerSocket.cpp`
+
+- __SecureSocket Class:__
+  Wraps ISocket with encryption layer. Performs DH handshake, derives keys, and handles encrypted send/receive.
+
+- __Configuration in appconfig.json:__
+  ```json
+  {
+    "security": {
+      "secure_channel_enabled": true,
+      "dh_key_size": 2048,
+      "cipher": "AES-256-CBC"
+    }
+  }
+  ```
+
+\subsection phase2 Phase 2: Authentication System
+
+\subsubsection auth_basic 2.1 Username/Password Authentication
+__Priority: CRITICAL__
+
+- __Objective:__ Implement secure user authentication with hashed passwords
+- __Implementation:__
+  - Store passwords using bcrypt or SHA-256 + salt (bcrypt preferred)
+  - Create a users table in the database
+  - Implement login/logout functionality
+  - Return JWT token on successful authentication
+  
+- __Files to create/modify:__
+  - `include/Security/AuthProvider.h` - Main authentication interface
+  - `include/Security/PasswordHasher.h` - Password hashing utilities
+  - `include/Security/TokenGenerator.h` - JWT token generation
+  - `src/Security/AuthProvider.cpp`
+  - `src/Security/PasswordHasher.cpp`
+  - `src/Security/TokenGenerator.cpp`
+
+- __Users table schema:__
+  ```sql
+  CREATE TABLE users (
+      id INTEGER PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      salt TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  ```
+
+- __Key classes:__ AuthProvider (register/authenticate/verify), PasswordHasher (generate salt, hash, verify)
+
+\subsubsection auth_token 2.2 Token-Based Session Management
+__Priority: HIGH__
+
+- __Objective:__ Use JWT tokens (HS256) for stateless authentication
+- __Implementation:__ Generate token on login, include in requests, validate before query execution
+- __Flow:__ `AUTH user pass` → token → `TOKEN: <jwt>\nQUERY`
+
+\subsection phase3 Phase 3: Data Encryption at Rest
+
+\subsubsection storage_encryption 3.1 Database File Encryption
+__Priority: HIGH__
+
+- __Objective:__ Encrypt database pages on disk using AES-256
+- __Files:__ AESCipher, EncryptedFileManager (wraps BinaryFileManager)
+- __Key management:__ Environment variable, key file, or prompt at startup
+
+\subsection phase4 Phase 4: Protocol Security
+
+\subsubsection proto_security 4.1 Secure Protocol Implementation
+__Priority: MEDIUM__
+
+- __Objective:__ Add basic security to application protocol
+- __Implementation:__
+  - Validate packet size limits (prevent buffer overflow)
+  - Add basic SQL injection protection
+  - Implement connection timeout
+  - Add simple rate limiting (optional)
+
+- __Packet structure:__
+  ```
+  [Header]
+    - Magic Number: "XALE" (4 bytes)
+    - Version: 1.0 (2 bytes)
+    - Command Type: AUTH/QUERY/RESPONSE (1 byte)
+    - Length: payload size (4 bytes)
+  
+  [Payload]
+    - Token (if authenticated): 256 bytes
+    - Data: variable length
+  ```
+
+- __Files to modify:__
+  - `include/Net/Protocol/SecuredPaquet.h`
+  - `src/Net/Protocol/SecuredPaquet.cpp`
+  - Add validation in `TcpServer.h` and `ConnectionHandler.h`
+
+- __Basic security checks:__
+  ```cpp
+  class PacketValidator {
+  public:
+      static bool validatePacketSize(size_t size) {
+          return size > 0 && size < MAX_PACKET_SIZE; // e.g., 1MB
+      }
+      
+      static bool validateSQLQuery(const std::string& query) {
+          // Basic injection prevention
+          std::string lower = toLower(query);
+          // Reject suspicious patterns
+          return lower.find("--") == std::string::npos &&
+                 lower.find(";") == std::string::npos ||
+                 isSingleStatement(query);
+      }
+  };
+  ```
+
+\section security_implementation Implementation Order
+
+\subsection impl_step1 Step 1: Custom Secure Channel
+1. Implement DHKeyExchange class (Diffie-Hellman)
+   - Use OpenSSL's BIGNUM for large number arithmetic
+   - Implement key generation and shared secret computation
+   
+2. Implement cryptographic primitives
+   - AESCipher wrapper (using OpenSSL's EVP API)
+   - HMAC implementation (using OpenSSL's HMAC API)
+   - HKDF for key derivation
+   
+3. Implement handshake protocol
+   - Create handshake message structures
+   - Implement client and server handshake logic
+   - Test key exchange works correctly
+   
+4. Create SecureSocket wrapper
+   - Wrap existing ISocket implementation
+   - Implement secure send/receive methods
+   - Handle encryption/decryption transparently
+   
+5. Test secure connection
+   - Test handshake between client and server
+   - Verify data is encrypted on wire
+   - Test with Wireshark to confirm encryption
+
+\subsection impl_step2 Step 2: Authentication
+1. Create users table schema
+2. Implement PasswordHasher with SHA-256 + salt
+3. Implement AuthProvider for login/registration
+4. Create TokenGenerator using simple JWT
+5. Add AUTH command to protocol
+6. Test authentication flow
+
+\subsection impl_step3 Step 3: Token Sessions
+1. Modify protocol to include token header
+2. Add token validation before query execution
+3. Implement token expiration
+4. Test complete auth + query flow
+5. Handle token refresh (optional)
+
+\subsection impl_step4 Step 4: Data Encryption
+1. Implement AESCipher class with OpenSSL
+2. Create EncryptedFileManager wrapper
+3. Integrate with existing BinaryFileManager
+4. Implement master key loading
+5. Test encrypted read/write operations
+
+\subsection impl_step5 Step 5: Testing & Polish
+1. Write unit tests for each security component
+2. Test complete security flow end-to-end
+3. Document security features
+4. Create demo for presentation
+
+\section security_dependencies Required Dependencies
+
+- __OpenSSL__ (>= 1.1.1) - For cryptographic primitives only (AES, SHA256, BIGNUM)
+  ```bash
+  # Ubuntu/Debian
+  sudo apt-get install libssl-dev
+  
+  # macOS
+  brew install openssl
+  ```
+
+- __CMakeLists.txt additions:__
+  ```cmake
+  find_package(OpenSSL REQUIRED)
+  target_link_libraries(xale-db-core OpenSSL::Crypto)
+  # Note: We only need Crypto, not SSL (we build our own protocol)
+  ```
+
+\section security_implementation_details Implementation Details
+
+\subsection detail_dh Implementation Tips
+
+- Use RFC 3526 MODP groups (2048-bit minimum, 3072-bit recommended)
+- Use OpenSSL's BIGNUM for DH arithmetic: `BN_mod_exp()` for key computation
+- Use `EVP_aes_256_cbc()` for AES encryption with random IVs
+- Use `HMAC(EVP_sha256(), ...)` for message authentication
+- Always use `RAND_bytes()` for random generation
+- Use `CRYPTO_memcmp()` for constant-time comparisons
+
+\subsection detail_security Security Checklist
+
+- Use `RAND_bytes()` for cryptographic randomness
+- Use `CRYPTO_memcmp()` for constant-time secret comparison
+- Key sizes: DH ≥2048-bit, AES/HMAC 256-bit
+- Never reuse IVs with the same key
+- Generate new DH keys per session (forward secrecy)
+
+\subsection detail_testing Testing
+
+- __Unit tests:__ DH key exchange, AES round-trip, HMAC verification
+- __Integration:__ Complete handshake + encrypted communication
+- __Manual:__ Wireshark packet capture to verify encryption
+
+\section security_testing Testing Strategy
+
+\subsection test_unit Unit Tests
+- Diffie-Hellman key exchange
+- Password hashing and verification
+- Token generation and validation
+- AES encryption/decryption
+- HMAC generation and verification
+- Secure handshake protocol
+
+\subsection test_integration Integration Tests
+- Complete authentication flow
+- Encrypted data storage and retrieval
+- Secure client-server communication
+- Token expiration handling
+
+\subsection test_manual Manual Testing
+- Verify handshake completes successfully
+- Use Wireshark to confirm data is encrypted on wire
+- Verify data encryption on disk
+- Test authentication with multiple users
+- Verify token validation
+- Test with man-in-the-middle scenarios
+
+\section security_demo Demo Scenarios
+
+\subsection demo_1 Scenario 1: Custom Secure Channel
+1. Start server with secure channel enabled
+2. Client connects and performs DH handshake
+3. Show Wireshark capture:
+   - Handshake messages visible (CLIENT_HELLO, SERVER_HELLO)
+   - Encrypted data afterwards (unreadable)
+4. Demonstrate key exchange working correctly
+
+\subsection demo_2 Scenario 2: Authentication
+1. Register new user
+2. Login with username/password
+3. Receive JWT token
+4. Execute queries with token
+
+\subsection demo_3 Scenario 3: Data Encryption
+1. Store data in database
+2. Show encrypted file on disk (hex dump)
+3. Retrieve data successfully (decrypted)
+
+\section security_notes Important Notes
+
+\warning __Critical Security Practices:__
+- NEVER commit keys or passwords to git
+- NEVER store passwords in plaintext
+- NEVER log tokens, passwords, or encryption keys
+- NEVER reuse IVs with the same encryption key
+- Always use cryptographically secure random number generation
+- Use constant-time comparison for secret values
+- Always use gitignore for: `*.key`, `.env`, `master.key`
+
+\warning __Custom Crypto Implementation:__
+This custom implementation is for educational purposes to understand how secure channels work.
+For production systems, always use battle-tested libraries like TLS/SSL.
+Common pitfalls in custom crypto:
+- Poor random number generation
+- Timing attacks in secret comparison
+- IV reuse vulnerabilities
+- Weak key derivation
+- Padding oracle attacks
+
+\note __Production Considerations:__
+This implementation provides a solid security foundation.
+Production systems may require additional hardening:
+- Certificate validation and proper CA
+- Key rotation mechanisms
+- More robust token management
+- Comprehensive input validation
+- Audit logging
+- Rate limiting and DoS protection
+
+\see architecture XaleDB general architecture
+
+*/

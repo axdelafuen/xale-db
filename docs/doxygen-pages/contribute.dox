@@ -6,14 +6,14 @@ Contributions to XaleDB are welcome! Whether you're fixing bugs, adding features
 
 ### Getting Started
 
-1. **Fork the Repository**
+1. __Fork the Repository__
 
 ```sh
 git clone https://github.com/axdelafuen/xale-db.git
 cd xale-db
 ```
 
-2. **Set Up the Development Environment**
+2. __Set Up the Development Environment__
 
 ```sh
 # Build the project
@@ -24,7 +24,7 @@ cmake --build ./build
 ./build/xale-db-tests
 ```
 
-3. **Create a Branch**
+3. __Create a Branch__
 
 ```sh
 git checkout -b feature/#issueN-your-feature-name
@@ -65,18 +65,18 @@ xale-db/
 
 1. Make sure your feature is linked to an active issue. (find active issue [here](https://github.com/axdelafuen/xale-db/issues))
 
-2. **Implement in the appropriate layer:**
+2. __Implement in the appropriate layer:__
    - Query parsing: `Query/` directory
    - Execution logic: `Execution/` directory
    - Storage operations: `Storage/` directory
    - Data structures: `DataStructure/` directory
    - ...
 
-3. **Comment** your code using _javadoc_ style
+3. __Comment__ your code using _javadoc_ style
 
-4. **Write tests** for your feature in the corresponding `tests/` subdirectory
+4. __Write tests__ for your feature in the corresponding `tests/` subdirectory
 
-5. **Update documentation** if adding new functionality
+5. __Update documentation__ if adding new functionality
 
 ### Testing
 
@@ -96,18 +96,18 @@ cmake --build ./build
 
 ### Submitting Changes
 
-1. **Commit your changes**
+1. __Commit your changes__
    ```sh
    git add .
    git commit -m "Brief description of your changes"
    ```
 
-2. **Push to your fork**
+2. __Push to your fork__
    ```sh
    git push origin feature/your-feature-name
    ```
 
-3. **Create a Pull Request**
+3. __Create a Pull Request__
    - Provide a clear description of your changes
    - Reference any related issues
    - Ensure all tests pass
