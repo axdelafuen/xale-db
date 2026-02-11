@@ -1,0 +1,139 @@
+/** \page architecture Architecture
+
+## System Architecture
+
+\dot "XaleDB Layered Architecture"
+digraph architecture {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    // Layer 1: Applications
+    subgraph cluster_apps {
+        label="Application Layer";
+        style=filled;
+        fillcolor=lightyellow;
+        CLI [label="CLI Client\n(xale-db-cli)", fillcolor=lightgreen];
+        Server [label="Server\n(xale-db-server)", fillcolor=lightgreen];
+        Debug [label="Debug Mode\n(xale-db-debug)", fillcolor=lightgreen];
+    }
+    
+    // Layer 2: Client & Network
+    subgraph cluster_network {
+        label="Network Layer";
+        style=filled;
+        fillcolor="#FFE6CC";
+        CLIClient [label="CLIClient"];
+        TcpServer [label="TcpServer"];
+        Socket [label="ISocket"];
+        ListenerSocket [label="IListenerSocket"];
+        SocketFactory [label="SocketFactory"];
+    }
+    
+    // Layer 3: Engine
+    subgraph cluster_engine {
+        label="Query Engine";
+        style=filled;
+        fillcolor="#E6F3FF";
+        QueryEngine [label="QueryEngine", fillcolor="#CCE5FF"];
+    }
+    
+    // Layer 4: Query Processing
+    subgraph cluster_query {
+        label="Query Processing";
+        style=filled;
+        fillcolor="#F0E6FF";
+        Tokenizer [label="BasicTokenizer\n(ITokenizer)"];
+        Parser [label="BasicParser\n(IParser)"];
+        Statement [label="Statement\n(AST)"];
+    }
+    
+    // Layer 5: Execution
+    subgraph cluster_execution {
+        label="Execution Layer";
+        style=filled;
+        fillcolor="#FFE6F0";
+        Executor [label="BasicExecutor\n(IExecutor)"];
+        TableManager [label="TableManager"];
+    }
+    
+    // Layer 6: Data Structures
+    subgraph cluster_data {
+        label="Data Structures";
+        style=filled;
+        fillcolor="#E6FFE6";
+        Table [label="Table"];
+        BPlusTree [label="B+ Tree"];
+        ResultSet [label="ResultSet"];
+    }
+    
+    // Layer 7: Storage
+    subgraph cluster_storage {
+        label="Storage Layer";
+        style=filled;
+        fillcolor="#FFE6E6";
+        StorageEngine [label="FileStorageEngine\n(IStorageEngine)"];
+        FileManager [label="BinaryFileManager\n(IFileManager)"];
+    }
+    
+    // Connections
+    CLI -> CLIClient;
+    CLI -> SocketFactory;
+    Server -> TcpServer;
+    Debug -> QueryEngine;
+    
+    CLIClient -> Socket;
+    TcpServer -> ListenerSocket;
+    TcpServer -> QueryEngine;
+    SocketFactory -> Socket;
+    SocketFactory -> ListenerSocket;
+    
+    QueryEngine -> Parser;
+    QueryEngine -> Executor;
+    QueryEngine -> ResultSet;
+    
+    Parser -> Tokenizer [label="uses"];
+    Parser -> Statement [label="builds"];
+    
+    Executor -> Statement [label="consumes"];
+    Executor -> TableManager;
+    Executor -> ResultSet [label="produces"];
+    
+    TableManager -> Table;
+    TableManager -> StorageEngine;
+    TableManager -> FileManager;
+    
+    Table -> BPlusTree;
+    
+    StorageEngine -> FileManager;
+}
+\enddot
+
+## Query Execution Flow
+
+\dot "SQL Query Processing Pipeline"
+digraph query_flow {
+    rankdir=LR;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    SQL [label="SQL Query\n(String)", shape=note, fillcolor=lightyellow];
+    Tokens [label="Tokens\n(List)", shape=note, fillcolor=lightyellow];
+    AST [label="Statement\n(AST)", shape=note, fillcolor=lightyellow];
+    Result [label="ResultSet", shape=note, fillcolor=lightgreen];
+    Response [label="Formatted\nResponse", shape=note, fillcolor=lightgreen];
+    
+    SQL -> Tokenizer [label="1. tokenize"];
+    Tokenizer -> Tokens [label="2"];
+    Tokens -> Parser [label="3. parse"];
+    Parser -> AST [label="4"];
+    AST -> Executor [label="5. execute"];
+    Executor -> TableManager [label="6. if needed"];
+    TableManager -> Storage [label="7. persist"];
+    Executor -> Result [label="8. build"];
+    Result -> QueryEngine [label="9. return"];
+    QueryEngine -> Response [label="10. format"];
+}
+\enddot
+
+*/
