@@ -8,7 +8,6 @@ digraph architecture {
     node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
     edge [fontname="Arial", fontsize=10];
     
-    // Layer 1: Applications
     subgraph cluster_apps {
         label="Application Layer";
         style=filled;
@@ -18,19 +17,18 @@ digraph architecture {
         Debug [label="Debug Mode\n(xale-db-debug)", fillcolor=lightgreen];
     }
     
-    // Layer 2: Client & Network
     subgraph cluster_network {
         label="Network Layer";
         style=filled;
         fillcolor="#FFE6CC";
         CLIClient [label="CLIClient"];
+        TcpClient [label="TcpClient"];
         TcpServer [label="TcpServer"];
         Socket [label="ISocket"];
         ListenerSocket [label="IListenerSocket"];
         SocketFactory [label="SocketFactory"];
     }
     
-    // Layer 3: Engine
     subgraph cluster_engine {
         label="Query Engine";
         style=filled;
@@ -38,7 +36,6 @@ digraph architecture {
         QueryEngine [label="QueryEngine", fillcolor="#CCE5FF"];
     }
     
-    // Layer 4: Query Processing
     subgraph cluster_query {
         label="Query Processing";
         style=filled;
@@ -48,7 +45,6 @@ digraph architecture {
         Statement [label="Statement\n(AST)"];
     }
     
-    // Layer 5: Execution
     subgraph cluster_execution {
         label="Execution Layer";
         style=filled;
@@ -57,7 +53,6 @@ digraph architecture {
         TableManager [label="TableManager"];
     }
     
-    // Layer 6: Data Structures
     subgraph cluster_data {
         label="Data Structures";
         style=filled;
@@ -67,7 +62,6 @@ digraph architecture {
         ResultSet [label="ResultSet"];
     }
     
-    // Layer 7: Storage
     subgraph cluster_storage {
         label="Storage Layer";
         style=filled;
@@ -76,18 +70,19 @@ digraph architecture {
         FileManager [label="BinaryFileManager\n(IFileManager)"];
     }
     
-    // Connections
     CLI -> CLIClient;
-    CLI -> SocketFactory;
+    CLI -> TcpClient;
     Server -> TcpServer;
     Debug -> QueryEngine;
     
-    CLIClient -> Socket;
+    TcpClient -> Socket;
     TcpServer -> ListenerSocket;
     TcpServer -> QueryEngine;
     SocketFactory -> Socket;
     SocketFactory -> ListenerSocket;
-    
+    TcpServer -> SocketFactory;
+    TcpClient -> SocketFactory;
+
     QueryEngine -> Parser;
     QueryEngine -> Executor;
     QueryEngine -> ResultSet;
@@ -101,7 +96,6 @@ digraph architecture {
     
     TableManager -> Table;
     TableManager -> StorageEngine;
-    TableManager -> FileManager;
     
     Table -> BPlusTree;
     
