@@ -20,7 +20,8 @@ namespace Xale::Core
         SyncFile,
         DataStruct,
         ParseError,
-		ExecutionError,
+        ExecutionError,
+        PacketError
     };
 
     class DbException : public std::exception 
