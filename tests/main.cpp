@@ -13,6 +13,7 @@
 #include "Query/BasicParserTests.h"
 #include "Execution/TableManagerTests.h"
 #include "Execution/BasicExecutorTests.h"
+#include "Net/PacketTests.h"
 // ---
 
 const std::string RED_COLOR = "\033[31m";
