@@ -2,19 +2,10 @@
 
 namespace Xale::Execution
 {
-	/**
-	 * @brief Constructs a BasicExecutor with a reference to the TableManager.
-	 * @param tableManager Reference to the TableManager for managing database tables.
-	 */
 	BasicExecutor::BasicExecutor(TableManager& tableManager)
 		: _tableManager(tableManager)
 	{}
 
-	/**
-	 * @brief Executes a given SQL statement and returns the result set.
-	 * @param statement Pointer to the SQL statement to be executed.
-	 * @return A unique pointer to the ResultSet containing the results of the execution.
-	 */
 	std::unique_ptr<Xale::DataStructure::ResultSet> BasicExecutor::execute(Xale::Query::Statement* statement)
 	{
 		switch (statement->type)

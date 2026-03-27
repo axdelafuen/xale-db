@@ -4,9 +4,6 @@
 
 namespace Xale::Net
 {
-    /**
-     * @brief Constructor - Initialize Winsock
-     */
     WindowsListenerSocket::WindowsListenerSocket()
         : _logger(Xale::Logger::Logger<WindowsListenerSocket>::getInstance()), 
         _socket(INVALID_SOCKET),
@@ -23,9 +20,6 @@ namespace Xale::Net
         }
     }
 
-    /**
-     * @brief Destructor - Cleanup Winsock
-     */
     WindowsListenerSocket::~WindowsListenerSocket()
     {
         close();
@@ -34,11 +28,6 @@ namespace Xale::Net
         }
     }
 
-    /**
-     * @brief Opens the listener socket on the specified port
-     * @param port Port number to listen on
-     * @return true if successful, false otherwise
-     */
     bool WindowsListenerSocket::open(int port)
     {
         if (!_wsaInitialized) {
@@ -72,12 +61,6 @@ namespace Xale::Net
         return true;
     }
 
-    /**
-     * @brief Listens for incoming client connections and reads data into the buffer
-     * @param buffer Buffer to store received data
-     * @param size Maximum size to receive
-     * @return Number of bytes received, 0 if connection closed, -1 on error
-     */
     int WindowsListenerSocket::listen(std::string& buffer, size_t size)
     {
         // Accept new client if not already connected
@@ -117,12 +100,6 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /**
-     * @brief Responds to the connected client with the provided data
-     * @param data Data to send
-     * @param size Size of data
-     * @return Number of bytes sent, or -1 on error
-     */
     int WindowsListenerSocket::respond(const std::string* data, size_t size)
     {
         if (_clientSocket == INVALID_SOCKET) {
@@ -138,9 +115,6 @@ namespace Xale::Net
         return bytesSent;
     }
 
-    /**
-     * @brief Closes the listener and client sockets
-     */
     void WindowsListenerSocket::close()
     {
         if (_clientSocket != INVALID_SOCKET) {

@@ -2,27 +2,14 @@
 
 namespace Xale::Query
 {
-    /**
-     * @brief Default constructor
-     */
     BasicParser::BasicParser()
         : _tokenizer(nullptr)
     {}
 
-    /**
-     * @brief Constructor with tokenizer
-     * @param tokenizer Pointer to a tokenizer instance
-     */
     BasicParser::BasicParser(ITokenizer* tokenizer)
         : _tokenizer(tokenizer)
     {}
 
-    /**
-     * @brief Parse a SQL query string
-     * @param query The SQL query to parse
-     * @return Unique pointer to the parsed statement
-     * @throws DbException if parsing fails
-     */
     std::unique_ptr<Statement> BasicParser::parse(const std::string& query)
     {
         if (!_tokenizer)
@@ -40,39 +27,22 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Set the tokenizer to use
-     * @param tokenizer Pointer to a tokenizer instance
-     */
     void BasicParser::setTokenizer(ITokenizer* tokenizer)
     {
         _tokenizer = tokenizer;
     }
 
-    /**
-     * @brief Advance to next token
-     */
     void BasicParser::advance()
     {
         if (_tokenizer)
             _currentToken = _tokenizer->nextToken();
     }
 
-    /**
-     * @brief Check if current token matches type
-     * @param type Token type to match
-     * @return True if matches, false otherwise
-     */
     bool BasicParser::match(TokenType type)
     {
         return _currentToken.type == type;
     }
 
-    /**
-     * @brief Check if current token is a specific keyword
-     * @param keyword Keyword to match (case-insensitive)
-     * @return True if matches, false otherwise
-     */
     bool BasicParser::matchKeyword(const std::string& keyword)
     {
         if (_currentToken.type != TokenType::ManipulationKeyword &&
@@ -87,11 +57,6 @@ namespace Xale::Query
         return upper == keyword;
     }
 
-    /**
-     * @brief Check if current token is a specific identifier
-     * @param identifier Identifier to match (case-insensitive)
-     * @return True if matches, false otherwise
-     */
     bool BasicParser::matchIdentifier(const std::string& identifier)
     {
         if (_currentToken.type != TokenType::Identifier)
@@ -103,46 +68,24 @@ namespace Xale::Query
         return upper == identifier;
     }
 
-    /**
-     * @brief Expect a specific token type or throw exception
-     * @param type Expected token type
-     * @param errorMsg Error message if expectation fails
-     * @throws DbException if token doesn't match
-     */
     void BasicParser::expect(TokenType type, const std::string& errorMsg)
     {
         if (!match(type))
             throwError(errorMsg);
     }
 
-    /**
-     * @brief Expect a specific keyword or throw exception
-     * @param keyword Expected keyword
-     * @param errorMsg Error message if expectation fails
-     * @throws DbException if keyword doesn't match
-     */
     void BasicParser::expectKeyword(const std::string& keyword, const std::string& errorMsg)
     {
         if (!matchKeyword(keyword))
             throwError(errorMsg);
     }
 
-    /**
-     * @brief Throw a parse error exception
-     * @param message Error message
-     * @throws DbException with parse error code
-     */
     void BasicParser::throwError(const std::string& message)
     {
         std::string fullMessage = message + " at position " + std::to_string(_currentToken.position);
         THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ParseError, fullMessage);
     }
 
-    /**
-     * @brief Parse a SQL statement
-     * @return Unique pointer to parsed statement
-     * @throws DbException if statement is invalid
-     */
     std::unique_ptr<Statement> BasicParser::parseStatement()
     {
         if (matchKeyword("SELECT"))
@@ -166,11 +109,6 @@ namespace Xale::Query
         }
     }
 
-    /**
-     * @brief Parse SELECT statement
-     * @return Unique pointer to SelectStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<SelectStatement> BasicParser::parseSelect()
     {
         auto stmt = std::make_unique<SelectStatement>();
@@ -215,11 +153,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse INSERT statement
-     * @return Unique pointer to InsertStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<InsertStatement> BasicParser::parseInsert()
     {
         auto stmt = std::make_unique<InsertStatement>();
@@ -256,11 +189,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse UPDATE statement
-     * @return Unique pointer to UpdateStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<UpdateStatement> BasicParser::parseUpdate()
     {
         auto stmt = std::make_unique<UpdateStatement>();
@@ -304,11 +232,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse DELETE statement
-     * @return Unique pointer to DeleteStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<DeleteStatement> BasicParser::parseDelete()
     {
         auto stmt = std::make_unique<DeleteStatement>();
@@ -329,11 +252,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse CREATE statement
-     * @return Unique pointer to CreateStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<CreateStatement> BasicParser::parseCreate()
     {
         auto stmt = std::make_unique<CreateStatement>();
@@ -403,11 +321,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse DROP statement
-     * @return Unique pointer to DropStatement
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<DropStatement> BasicParser::parseDrop()
     {
         auto stmt = std::make_unique<DropStatement>();
@@ -431,9 +344,6 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse LIST statement
-     */
     std::unique_ptr<ListStatement> BasicParser::parseList()
     {
         auto stmt = std::make_unique<ListStatement>();
@@ -453,21 +363,11 @@ namespace Xale::Query
         return stmt;
     }
 
-    /**
-     * @brief Parse an expression
-     * @return Unique pointer to Expression
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<Expression> BasicParser::parseExpression()
     {
         return parseComparison();
     }
 
-    /**
-     * @brief Parse a comparison expression
-     * @return Unique pointer to Expression
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<Expression> BasicParser::parseComparison()
     {
         auto left = parsePrimary();
@@ -500,11 +400,6 @@ namespace Xale::Query
         return left;
     }
 
-    /**
-     * @brief Parse a primary expression (identifier or literal)
-     * @return Unique pointer to Expression
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<Expression> BasicParser::parsePrimary()
     {
         if (match(TokenType::Identifier))
@@ -532,11 +427,6 @@ namespace Xale::Query
         }
     }
 
-    /**
-     * @brief Parse WHERE clause
-     * @return Unique pointer to WhereClause
-     * @throws DbException if syntax is invalid
-     */
     std::unique_ptr<WhereClause> BasicParser::parseWhereClause()
     {
         expectKeyword("WHERE", "Expected WHERE keyword");

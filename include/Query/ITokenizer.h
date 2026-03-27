@@ -14,10 +14,32 @@ namespace Xale::Query
     class ITokenizer
     {
         public:
+            /**
+             * @brief Virtual destructor for ITokenizer
+             */
             virtual void setInput(const std::string& input) = 0;
+
+            /**
+             * @brief Retrieve the next token from the input
+             * @return The next token in the sequence
+             */
             virtual Token nextToken() = 0;
+
+            /**
+             * @brief Peek at the next token without consuming it
+             * @return The next token in the sequence
+             */
             virtual Token peekToken() const = 0;
+
+            /**
+             * @brief Reset the tokenizer state to the beginning of the input
+             */
             virtual void reset() = 0;
+
+            /**
+             * @brief Tokenize the entire input into a vector of tokens
+             * @return A vector containing all tokens from the input
+             */
             virtual std::vector<Token> tokenize() = 0;
     };
 }

@@ -2,26 +2,17 @@
 
 namespace Xale::Net
 {
-    /**
-     * @brief Constructor
-     */
     TcpServer::TcpServer(Xale::Engine::QueryEngine& queryEngine) :
         _logger(Xale::Logger::Logger<TcpServer>::getInstance()),
         _serverSocket(nullptr),
         _queryEngine(queryEngine)
     {}
 
-    /**
-     * @brief Destructor
-     */
     TcpServer::~TcpServer()
     {
         stop();
     }
 
-    /**
-     * @brief Starts the TCP server on the specified port
-     */
     bool TcpServer::start(int port)
     {
         _serverSocket = Xale::Net::SocketFactory::createListenerSocket();
@@ -63,9 +54,6 @@ namespace Xale::Net
         return true;
     }
 
-    /**
-     * @brief Stops the TCP server
-     */
     void TcpServer::stop()
     {
         if (_serverSocket) {

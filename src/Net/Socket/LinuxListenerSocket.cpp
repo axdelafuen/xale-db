@@ -4,9 +4,6 @@
 
 namespace Xale::Net
 {
-    /**
-     * @brief Constructor
-     */
     LinuxListenerSocket::LinuxListenerSocket()
         : _logger(Xale::Logger::Logger<LinuxListenerSocket>::getInstance()), 
         _socket(-1),
@@ -14,9 +11,6 @@ namespace Xale::Net
         _address({})
     {}
 
-    /**
-     * @brief Opens the listener socket on the specified port
-     */
     bool LinuxListenerSocket::open(int port)
     {
         _socket = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -44,9 +38,6 @@ namespace Xale::Net
         return true;
     }
 
-    /**
-     * @brief Listens for incoming client connections and reads data into the buffer
-     */
     int LinuxListenerSocket::listen(std::string& buffer, size_t size)
     {
         if (_clientSocket == -1) {
@@ -76,9 +67,6 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /**
-     * @brief Responds to the connected client with the provided data
-     */
     int LinuxListenerSocket::respond(const std::string* data, size_t size)
     {
         if (_clientSocket == -1) {
@@ -90,9 +78,6 @@ namespace Xale::Net
         return bytesSent;
     }
 
-    /**
-     * @brief Closes the listener and client sockets
-     */
     void LinuxListenerSocket::close()
     {
         if (_socket != -1)

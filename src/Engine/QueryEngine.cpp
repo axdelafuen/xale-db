@@ -2,11 +2,6 @@
 
 namespace Xale::Engine
 {
-    /**
-     * @brief Constructor of the XaleDB SQL QueryEngine
-     * @param parser a SQL string parser
-     * @param executor a SQL statement executor
-     */
     QueryEngine::QueryEngine(
             Xale::Query::IParser* parser, 
             Xale::Execution::IExecutor* executor) :
@@ -16,11 +11,6 @@ namespace Xale::Engine
         _lastStatementType(Xale::Query::StatementType::Unknown)
     {}
    
-    /**
-     * @brief Run the given string query
-     * @param sqlQuery The SQL string query
-     * @return True if the execution run well, False otherwise
-     */
     bool QueryEngine::run(std::string sqlQuery)
     {
         auto parsedStmt = _parser->parse(sqlQuery);
@@ -30,10 +20,6 @@ namespace Xale::Engine
         return true;
     }
 
-    /**
-     * @brief Get the last runned query results
-     * @return a ResultSet of the last runned query
-     */
     std::unique_ptr<Xale::DataStructure::ResultSet> QueryEngine::getResults()
     {
         if (_results != nullptr)
@@ -41,11 +27,7 @@ namespace Xale::Engine
         else
             return nullptr;
     }
-
-    /**
-     * @brief Get the last runned query results as a formatted string
-     * @return a string representing the last runned query results
-     */
+   
     std::string QueryEngine::getResultsToString()
     {
         if (_results == nullptr)
