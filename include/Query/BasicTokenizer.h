@@ -14,13 +14,37 @@ namespace Xale::Query
     class BasicTokenizer : public ITokenizer
     {
         public:
+            /**
+             * @brief Set the input string to tokenize
+             */
             void setInput(const std::string& input) override;
+
+            /**
+             * @brief Get the next token
+             */
             Token nextToken() override;
+
+            /**
+             * @brief Get the current token
+             */
             Token peekToken() const override;
+
+            /**
+             * @brief Reset the cursor and the current token
+             */
             void reset() override;
+
+            /**
+             * @brief Tokenize all the input
+             */
             std::vector<Token> tokenize() override;
         private:
+            /**
+             * @brief Core method of this class, logic of the tokenization
+             * This method is private
+             */
             Token readToken();
+
             void skipWhitespace();
             char currentChar() const;
             char goNextChar();

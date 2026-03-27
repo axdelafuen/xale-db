@@ -16,13 +16,41 @@
 
 namespace Xale::Net
 {
+    /**
+     * @brief Linux implementation of ISocket
+     */
     class LinuxSocket : public ISocket
     {
         public:
+            /**
+             * @brief Constructor
+             */
             LinuxSocket();
+
+            /**
+             * @brief Connect a socket to a host/port
+             * @param hostAddress Host address
+             * @param port Port number
+             */
             bool connect(const std::string& hostAddress, int port) override;
+
+            /**
+             * @brief Send data through the socket
+             * @param data Data to send
+             * @param size Size of data
+             */
             int send(const std::string* data, size_t size) override; // should be SecurePaquet in the future
+
+            /**
+             * @brief Receive data from the socket
+             * @param buffer Buffer to store received data
+             * @param size Maximum size to receive
+             */
             int receive(std::string* buffer, size_t size) override;
+
+            /**
+             * @brief Close the socket
+             */
             void close() override;
         private:
             Xale::Logger::Logger<LinuxSocket>& _logger;

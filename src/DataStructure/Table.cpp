@@ -2,92 +2,50 @@
 
 namespace Xale::DataStructure
 {
-	/**
-	 * @brief Constructor
-	 * @param name Table name
-	 */
 	Table::Table(const std::string& name)
 		:_name(name)
 	{}
 
-	/**
-	 * @brief Get table name
-	 * @return Table name
-	 */
 	const std::string& Table::getName() const
 	{
 		return _name;
 	}
 
-	/**
-	 * @brief Get schema
-	 * @return Vector of column definitions
-	 */
 	const std::vector<ColumnDefinition>& Table::getSchema() const
 	{
 		return _schema;
 	}
 
-	/**
-	 * @brief Get all rows
-	 * @return Vector of rows
-	 */
 	const std::vector<Row>& Table::getRows() const
 	{
 		return _rows;
 	}
 
-	/**
-	 * @brief Get row count
-	 * @return Number of rows
-	 */
 	size_t Table::getRowCount() const
 	{
 		return _rows.size();
 	}
 
-	/**
-	 * @brief Get column count
-	 * @return Number of columns
-	 */
 	size_t Table::getColumnCount() const
 	{
 		return _schema.size();
 	}
 
-	/**
-	 * @brief Check if empty
-	 * @return True if empty
-	 */
 	bool Table::isEmpty() const
 	{
 		return _rows.empty();
 	}
 
-	/**
-	 * @brief Check if mutable
-	 * @return Always true for Table
-	 */
 	bool Table::isMutable() const
 	{
 		return true;
 	}
 
-	/**
-	 * @brief Add column definition
-	 * @param column Column definition
-	 */
 	void Table::addColumn(const ColumnDefinition& column)
 	{
 		_schema.push_back(column);
 	}
 
-	/**
-	 * @brief Insert a row
-	 * @param row Row to insert
-	 * @return True if successful
-	 * @throws DbException if validation fails
-	 */
 	bool Table::insertRow(const Row& row)
 	{
 		if (row.fields.size() != _schema.size())
@@ -98,13 +56,6 @@ namespace Xale::DataStructure
 		return true;
 	}
 
-	/**
-	 * @brief Update rows matching condition
-	 * @param columnName Column to filter
-	 * @param value Value to match
-	 * @param updates Map of column names to new values
-	 * @return Number of rows updated
-	 */
 	size_t Table::updateRows(
 		const std::string& columnName,
 		const FieldValue& value,
@@ -147,12 +98,6 @@ namespace Xale::DataStructure
 		return updatedCount;
 	}
 
-	/**
-	 * @brief Delete rows matching condition
-	 * @param columnName Column to filter
-	 * @param value Value to match
-	 * @return Number of rows deleted
-	 */
 	size_t Table::deleteRows(const std::string& columnName, const FieldValue& value)
 	{
 		size_t deletedCount = 0;
@@ -185,12 +130,6 @@ namespace Xale::DataStructure
 		return deletedCount;
 	}
 
-	/**
-	 * @brief Find rows by condition
-	 * @param columnName Column name to filter
-	 * @param value Value to match
-	 * @return Vector of matching rows
-	 */
 	std::vector<Row> Table::findRows(const std::string& columnName, const FieldValue& value) const
 	{
 		std::vector<Row> result;
@@ -217,10 +156,6 @@ namespace Xale::DataStructure
 		return result;
 	}
 
-	/**
-	 * @brief Serialize table to binary format
-	 * @return Vector of bytes containing serialized table
-	 */
 	std::vector<char> Table::serialize() const
 	{
 		std::vector<char> buffer;
@@ -295,11 +230,6 @@ namespace Xale::DataStructure
 		return buffer;
 	}
 
-	/**
-	 * @brief Deserialize table from binary format
-	 * @param data Vector of bytes containing serialized table
-	 * @return Deserialized Table object
-	 */
 	Table Table::deserialize(const std::vector<char>& data)
 	{
 		size_t offset = 0;

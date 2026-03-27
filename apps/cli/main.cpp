@@ -1,4 +1,6 @@
 #include "Net/TcpClient.h"
+#include "Net/Packet/Packet.h"
+#include "Net/Packet/PacketConstants.h"
 #include "Client/CLIClient.h"
 
 #include <iostream>
@@ -19,6 +21,7 @@ int main(int argc, char* argv[])
 
     cliClient.start();
 
+
     while (true) {
         bool isExit = false;
         std::string query = cliClient.getInput(&isExit);
@@ -28,13 +31,17 @@ int main(int argc, char* argv[])
             break;
         }
 
-        tcpClient.send(&query, query.length());
+        Xale::Net::Packet packet(Xale::Net::CommandType::QUERY, std::vector<uint8_t>(query.begin(), query.end()));
+        tcpClient.send(&packet, packet.size());
 
-        std::string buffer;
-        int bytes_read = tcpClient.receive(&buffer, 4096);
-        
+        Xale::Net::Packet responsePacket(Xale::Net::CommandType::RESPONSE, {});
+        int bytes_read = tcpClient.receive(&responsePacket, 4096);
+
         if (bytes_read > 0) {
-            cliClient.displayOutput(buffer);
+            // Convert payload to string for display
+            const auto& payload = responsePacket.getPayload();
+            std::string output(payload.begin(), payload.end());
+            cliClient.displayOutput(output);
         } else if (bytes_read == 0) {
             cliClient.displayOutput("Server closed the connection.");
             break;

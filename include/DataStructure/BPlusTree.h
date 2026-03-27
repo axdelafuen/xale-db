@@ -14,38 +14,88 @@ namespace Xale::DataStructure
 	class BPlusTree
 	{
 		public:
+            /**
+             * @brief Constructor
+             * @param maxKeys Maximum number of keys per node (order of the tree)
+             */
 			BPlusTree(int maxKeys);
-			bool insert(TKey key, TValue* value);
+
+            /**
+             * @brief Insert a key-value pair into the B+ Tree
+             * @param key Key to insert
+             * @param value Pointer to the value to insert
+             * @return True if insertion is successful, false otherwise
+             */
+            bool insert(TKey key, TValue* value);
+
+            /**
+             * @brief Remove a key from the B+ Tree
+             * @param key Key to remove
+             * @return True if removal is successful, false if key not found
+             */
 			bool remove(TKey key);
+
+            /**
+             * @brief Search for a key in the B+ Tree
+             * @param key Key to search for
+             * @return Pointer to the value if found, nullptr if not found
+             */
 			TValue* search(TKey key);
 		private:
             Node<TKey, TValue>* _root;
 			int _keysMax;
 
+            /**
+             * @brief Split a child node when it is full
+             * @param parent Parent node of the child to split
+             * @param index Index of the child to split
+             * @param child Child node to split
+             */
 			void splitChild(Node<TKey, TValue>* parent, int index, Node<TKey, TValue>* child);
+
+            /**
+             * @brief Insert a key-value pair into a non-full node
+             * @param node Node to insert into
+             * @param key Key to insert
+             * @param value Pointer to the value to insert
+             */
 			void insertNonFull(Node<TKey, TValue>* node, TKey key, TValue* value);
+
+            /**
+             * @brief Remove a key from a node
+             * @param node Node to remove from
+             * @param key Key to remove
+             */
 			void remove(Node<TKey, TValue>* node, TKey key);
+
+            /**
+             * @brief Merge a child node with its sibling
+             * @param node Parent node
+             * @param index Index of the child to merge
+             */
 			void merge(Node<TKey, TValue>* node, int index);
+
+            /**
+             * @brief Borrow a key from the previous sibling
+             * @param node Parent node
+             * @param index Index of the child to borrow for
+             */
 			void borrowFromPrev(Node<TKey, TValue>* node, int index);
+
+            /**
+             * @brief Borrow a key from the next sibling
+             * @param node Parent node
+             * @param index Index of the child to borrow for
+             */
 			void borrowFromNext(Node<TKey, TValue>* node, int index);
 	};
 
-	/**
-	 * @brief B+Tree constructor
-	 * @param maxKeys Maximum number of keys per node
-	 */
 	template <typename TKey, typename TValue>
 	BPlusTree<TKey, TValue>::BPlusTree(int maxKeys):
 		_root(nullptr),
 		_keysMax(maxKeys)
 	{}
 
-	/**
-	 * @brief Insert a key-value pair into the B+ Tree
-	 * @param key The key to insert
-	 * @param value The value associated with the key
-	 * @return True if insertion is successful, false otherwise
-	 */
 	template <typename TKey, typename TValue>
 	bool BPlusTree<TKey, TValue>::insert(TKey key, TValue* value)
 	{
@@ -69,11 +119,6 @@ namespace Xale::DataStructure
         }
 	}
 
-	/**
-	 * @brief Remove a key from the B+ Tree
-	 * @param key The key to remove
-	 * @return True if removal is successful, false otherwise
-	 */
 	template <typename TKey, typename TValue>
 	bool BPlusTree<TKey, TValue>::remove(TKey key)
 	{
@@ -90,11 +135,6 @@ namespace Xale::DataStructure
         return false;
 	}
 
-	/**
-	 * @brief Search for a key in the B+ Tree
-	 * @param key The key to search for
-	 * @return Pointer to the value associated with the key, or nullptr if not found
-	 */
 	template <typename TKey, typename TValue>
 	TValue* BPlusTree<TKey, TValue>::search(TKey key)
 	{

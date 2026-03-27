@@ -4,20 +4,12 @@
 
 namespace Xale::Net
 {
-    /**
-     * @brief Constructor
-     */
     LinuxSocket::LinuxSocket() :
         _logger(Xale::Logger::Logger<LinuxSocket>::getInstance()),
         _socket(-1),
         _address({})
     {}
 
-    /**
-     * @brief Connect a socket to a host/port
-     * @param hostAddress 
-     * @param port
-     */
     bool LinuxSocket::connect(const std::string& hostAddress, int port)
     {
         _socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,21 +36,11 @@ namespace Xale::Net
         return true;
     }
 
-    /**
-     * @brief Send data through the socket
-     * @param data
-     * @param size
-     */
     int LinuxSocket::send(const std::string* data, size_t size)
     {
         return ::send(_socket, data->c_str(), size, 0);
     }
 
-    /**
-     * @brief Receive data from the socket
-     * @param buffer 
-     * @param size
-     */
     int LinuxSocket::receive(std::string* buffer, size_t size)
     {
         char* tempBuffer = new char[size];
@@ -71,9 +53,6 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    /**
-     * @brief Close the socket
-     */
     void LinuxSocket::close()
     {
         ::close(_socket);

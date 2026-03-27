@@ -6,6 +6,9 @@
 #include "Net/Socket/SocketFactory.h"
 #include "Net/Socket/IListenerSocket.h"
 
+#include "Net/Packet/Packet.h"
+#include "Net/Packet/PacketConstants.h"
+
 #include "Engine/QueryEngine.h" // TODO: remove when injecting from outside
 
 #include <string>

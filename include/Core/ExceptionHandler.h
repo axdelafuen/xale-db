@@ -8,6 +8,9 @@
 
 namespace Xale::Core
 {
+    /**
+     * @brief Enumeration for database exception codes. This should be reviewed and expanded as needed.
+     */
     enum class ExceptionCode // Should be reviewed
     {
         None = 0,
@@ -20,9 +23,13 @@ namespace Xale::Core
         SyncFile,
         DataStruct,
         ParseError,
-		ExecutionError,
+        ExecutionError,
+        PacketError
     };
 
+    /**
+     * @brief Custom exception class for database-related errors. It includes an error code, message, and source location information.
+     */
     class DbException : public std::exception 
     {
         public:
