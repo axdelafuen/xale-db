@@ -7,11 +7,7 @@ namespace Xale::Net
         _socket(-1), 
         _ctx(nullptr), 
         _ssl(nullptr)
-    {
-        SSL_library_init();
-        SSL_load_error_strings();
-        OpenSSL_add_all_algorithms();
-    }
+    {}
 
     bool LinuxSSLSocket::connect(const std::string& ip, int port)
     {
@@ -36,7 +32,18 @@ namespace Xale::Net
         if (inet_pton(AF_INET, ip.c_str(), &serverAddr.sin_addr) <= 0) {
             _logger.error("Invalid IP address");
             ::close(_socket);
+            _socket = -1;
             SSL_CTX_free(_ctx);
+            _ctx = nullptr;
+            return false;
+        }
+
+        if (::connect(_socket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+            _logger.error("TCP connection failed");
+            ::close(_socket);
+            _socket = -1;
+            SSL_CTX_free(_ctx);
+            _ctx = nullptr;
             return false;
         }
 
@@ -46,8 +53,11 @@ namespace Xale::Net
         if (SSL_connect(_ssl) <= 0) {
             _logger.error("SSL connection failed");
             SSL_free(_ssl);
+            _ssl = nullptr;
             ::close(_socket);
+            _socket = -1;
             SSL_CTX_free(_ctx);
+            _ctx = nullptr;
             return false;
         }
 
@@ -87,19 +97,20 @@ namespace Xale::Net
             return 0;
         }
 
-        int bytesReceived = SSL_read(_ssl, buffer->data(), static_cast<int>(size));
-        if (bytesReceived <= 0) {
-            _logger.error("SSL read failed");
-            return -1;
-        }
+        char* tempBuffer = new char[size];
+        int bytesRead = SSL_read(_ssl, tempBuffer, size);
+        
+        if (bytesRead > 0)
+            buffer->assign(tempBuffer, tempBuffer + bytesRead);
 
-        return bytesReceived;
+        delete[] tempBuffer;
+
+        return bytesRead;
     }
 
     void LinuxSSLSocket::close()
     {
         if (_ssl) {
-            SSL_shutdown(_ssl);
             SSL_free(_ssl);
             _ssl = nullptr;
         }
