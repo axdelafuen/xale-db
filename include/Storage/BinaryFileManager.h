@@ -14,9 +14,6 @@ namespace Xale::Storage
     /**
 	 * @brief Concrete implementation of IFileManager for binary file operations
      */
-    /**
-     * @brief Concrete implementation of IFileManager for binary file operations
-     */
     class BinaryFileManager : public IFileManager
     {
         public:

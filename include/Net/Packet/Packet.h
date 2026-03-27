@@ -55,7 +55,7 @@ namespace Xale::Net
              * @brief Gets the payload data of the packet.
              * @return Payload as vector of bytes
              */
-            std::vector<uint8_t> getPayload() const;
+            const std::vector<uint8_t> getPayload() const;
     };
 }
 

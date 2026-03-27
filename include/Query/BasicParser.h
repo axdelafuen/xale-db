@@ -17,9 +17,6 @@ namespace Xale::Query
     /**
      * @brief Basic implementation of SQL parser
      */
-    /**
-     * @brief Basic implementation of SQL parser
-     */
     class BasicParser : public IParser
     {
         public:

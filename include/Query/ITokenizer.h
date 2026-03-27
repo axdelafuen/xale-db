@@ -15,7 +15,8 @@ namespace Xale::Query
     {
         public:
             /**
-             * @brief Virtual destructor for ITokenizer
+             * @brief Set the input SQL string to be tokenized
+             * @param input The SQL query string
              */
             virtual void setInput(const std::string& input) = 0;
 
