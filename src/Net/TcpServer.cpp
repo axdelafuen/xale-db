@@ -2,9 +2,10 @@
 
 namespace Xale::Net
 {
-    TcpServer::TcpServer(Xale::Engine::QueryEngine& queryEngine) :
+    TcpServer::TcpServer(Xale::Engine::QueryEngine& queryEngine, std::unique_ptr<Xale::Net::ISocketFactory> socketFactory) :
         _logger(Xale::Logger::Logger<TcpServer>::getInstance()),
         _serverSocket(nullptr),
+        _socketFactory(std::move(socketFactory)),
         _queryEngine(queryEngine)
     {}
 
@@ -15,7 +16,7 @@ namespace Xale::Net
 
     bool TcpServer::start(int port)
     {
-        _serverSocket = Xale::Net::SocketFactory::createListenerSocket();
+        _serverSocket = _socketFactory->createListenerSocket();
         if (!_serverSocket->open(port)) {
             _logger.error("Failed to open listener socket");
             return false;
@@ -23,7 +24,7 @@ namespace Xale::Net
 
         _logger.info("Server listening on port " + std::to_string(port) + "...");
         while (true) {
-            std::string buffer;
+            std::vector<uint8_t> buffer;
             int bytesRead = _serverSocket->listen(buffer, 4096);
             if (bytesRead <= 0) {
                 _logger.error("Failed to read from client");
@@ -41,8 +42,7 @@ namespace Xale::Net
                 // Respond with error packet
                 Xale::Net::Packet errorPacket(Xale::Net::CommandType::RESPONSE, std::vector<uint8_t>(errorMsg.begin(), errorMsg.end()));
                 auto errorSerialized = errorPacket.serialize();
-                std::string errorStr(errorSerialized.begin(), errorSerialized.end());
-                _serverSocket->respond(&errorStr, errorStr.size());
+                _serverSocket->respond(&errorSerialized, errorSerialized.size());
                 continue;
             }
 
@@ -62,8 +62,7 @@ namespace Xale::Net
             // Send response as Packet
             Xale::Net::Packet responsePacket(Xale::Net::CommandType::RESPONSE, std::vector<uint8_t>(response.begin(), response.end()));
             auto serialized = responsePacket.serialize();
-            std::string responseStr(serialized.begin(), serialized.end());
-            _serverSocket->respond(&responseStr, responseStr.size());
+            _serverSocket->respond(&serialized, serialized.size());
             _logger.info("Response sent");
         }
 

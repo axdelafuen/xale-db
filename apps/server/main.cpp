@@ -3,6 +3,7 @@
 #include "Core/Setup.h"
 #include "Engine/QueryEngine.h"
 #include "Net/TcpServer.h"
+#include "Net/Socket/BasicSocketFactory.h"
 
 /**
  * @brief Server entrypoint
@@ -15,9 +16,11 @@ int main()
     if (!setup.initialize())
         return -1;
 
+    std::unique_ptr<Xale::Net::ISocketFactory> socketFactory = std::move(setup.getSocketFactory());
+
     // Start server
     auto& queryEngine = setup.getQueryEngine();
-    Xale::Net::TcpServer server(queryEngine);
+    Xale::Net::TcpServer server(queryEngine, std::move(socketFactory));
 
     if (!server.start(8080)) {
         logger.error("Failed to start the server");

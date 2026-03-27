@@ -1,7 +1,7 @@
 #ifndef NET_TCP_CLIENT_H
 #define NET_TCP_CLIENT_H
 
-#include "Net/Socket/SocketFactory.h"
+#include "Net/Socket/ISocketFactory.h"
 #include "Net/Packet/Packet.h"
 
 #include <string>
@@ -12,7 +12,7 @@ namespace Xale::Net
     class TcpClient
     {
         public:
-            TcpClient();
+            TcpClient(std::unique_ptr<Xale::Net::ISocketFactory> socketFactory);
             ~TcpClient();
             
             /**
@@ -63,6 +63,7 @@ namespace Xale::Net
             void close();
         private:
             std::unique_ptr<Xale::Net::ISocket> _socket;
+            std::unique_ptr<Xale::Net::ISocketFactory> _socketFactory;
 
     };
 }

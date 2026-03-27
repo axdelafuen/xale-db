@@ -2,6 +2,8 @@
 #define NET_I_SOCKET_H
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
 namespace Xale::Net
 {
@@ -9,8 +11,8 @@ namespace Xale::Net
     {
         public:
             virtual bool connect(const std::string& hostAddress, int port) = 0;
-            virtual int send(const std::string* data, size_t size) = 0; // should be SecurePaquet in the future
-            virtual int receive(std::string* buffer, size_t size) = 0;
+            virtual int send(const std::vector<uint8_t>* data, size_t size) = 0;
+            virtual int receive(std::vector<uint8_t>* buffer, size_t size) = 0;
             virtual void close() = 0;
     };
 }

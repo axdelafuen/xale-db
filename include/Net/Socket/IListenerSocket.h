@@ -1,7 +1,8 @@
 #ifndef NET_I_LISTENER_SOCKET_H
 #define NET_I_LISTENER_SOCKET_H
 
-#include <string>
+#include <vector>
+#include <cstdint>
 
 namespace Xale::Net
 {
@@ -9,8 +10,8 @@ namespace Xale::Net
     {
         public:
             virtual bool open(int port) = 0;
-            virtual int listen(std::string& buffer, size_t size) = 0;
-            virtual int respond(const std::string* data, size_t size) = 0; // should be SecurePaquet in the future
+            virtual int listen(std::vector<uint8_t>& buffer, size_t size) = 0;
+            virtual int respond(const std::vector<uint8_t>* data, size_t size) = 0;
             virtual void close() = 0;
     };
 }

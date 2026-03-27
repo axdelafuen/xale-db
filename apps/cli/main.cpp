@@ -2,18 +2,40 @@
 #include "Net/Packet/Packet.h"
 #include "Net/Packet/PacketConstants.h"
 #include "Client/CLIClient.h"
+#include "Net/Socket/BasicSocketFactory.h"
+#include "Net/Socket/SSLSocketFactory.h"
 
 #include <iostream>
 #include <string>
+#include <csignal>
 
 /**
  * @brief CLI entrypoint
  */
 int main(int argc, char* argv[])
 {
+    std::signal(SIGPIPE, SIG_IGN);
     auto cliClient = Xale::Client::CLIClient(); // use abstraction in the future
 
-    auto tcpClient = Xale::Net::TcpClient();
+    // check if SSL is disable from command line arguments
+    bool useSSL = true;
+    for (int i = 1; i < argc; ++i) 
+    {
+        std::string arg = argv[i];
+        if (arg == "--no-ssl") 
+        {
+            useSSL = false;
+            break;
+        }
+    }
+
+    std::unique_ptr<Xale::Net::ISocketFactory> socketFactory;
+    if (useSSL) 
+        socketFactory = std::make_unique<Xale::Net::SSLSocketFactory>("", "");
+    else 
+        socketFactory = std::make_unique<Xale::Net::BasicSocketFactory>();
+
+    auto tcpClient = Xale::Net::TcpClient(std::move(socketFactory));
     if (!tcpClient.connect("127.0.0.1", 8080)) {
         std::cerr << "Connection failed. Is the server running?" << std::endl;
         return -1;

@@ -45,37 +45,11 @@ namespace Xale::Core
             outError = "Missing or invalid 'Logging.OutputFilePath' in config";
             return false;
         }
-        else
-        {
-            const std::string root = Xale::Core::Helper::getExecutableFolderPath();
-            if (!root.empty())
-            {
-                size_t pos = 0;
-                while ((pos = _outputFilePath.find("__ROOT__", pos)) != std::string::npos)
-                {
-                    _outputFilePath.replace(pos, 8, root);
-                    pos += root.length();
-                }
-            }
-        }
-
+        
         if (!extractStringField(content, "DataFilePath", _dataFilePath))
         {
             outError = "Missing or invalid 'DataFilePath' in config";
             return false;
-        }
-        else
-        {
-            const std::string root = Xale::Core::Helper::getExecutableFolderPath();
-            if (!root.empty())
-            {
-                size_t pos = 0;
-                while ((pos = _dataFilePath.find("__ROOT__", pos)) != std::string::npos)
-                {
-                    _dataFilePath.replace(pos, 8, root);
-                    pos += root.length();
-                }
-            }
         }
 
         if (!extractStringField(content, "FileNameFormat", _fileNameFormat))
@@ -106,6 +80,25 @@ namespace Xale::Core
             {
                 _fileNameFormat.replace(pos, placeholderYYYY.length(), getLocaltimeYear());
                 pos += 4;
+            }
+        }
+
+        std::string sslValue;
+        if (!extractStringField(content, "UseSSL", sslValue)) {
+            outError = "Missing or invalid 'UseSSL' in config";
+            _useSSL = false;
+        } else {
+            _useSSL = (sslValue == "true");
+        }
+
+        if (_useSSL) {
+            if (!extractStringField(content, "SSLCert", _serverSSLCert)) {
+                outError = "Missing or invalid 'SSLCert' in config";
+                _useSSL = false;
+            }
+            if (!extractStringField(content, "SSLKey", _serverSSLKey)) {
+                outError = "Missing or invalid 'SSLKey' in config";
+                _useSSL = false;
             }
         }
 
@@ -148,6 +141,21 @@ namespace Xale::Core
         return _dataFilePath; 
     }
 
+    bool ConfigurationHandler::useSSL() const noexcept 
+    { 
+        return _useSSL; 
+    }
+
+    const std::string& ConfigurationHandler::getServerSSLCert() const noexcept 
+    { 
+        return _serverSSLCert; 
+    }
+
+    const std::string& ConfigurationHandler::getServerSSLKey() const noexcept 
+    { 
+        return _serverSSLKey; 
+    }
+
     bool ConfigurationHandler::extractStringField(const std::string& text, const std::string& key, std::string& outValue)
     {
         const std::string pattern = "\"" + key + "\"";
@@ -168,6 +176,19 @@ namespace Xale::Core
             return false;
 
         outValue = text.substr(pos + 1, end - (pos + 1));
+
+        // replace __ROOT__ with executable folder path
+        const std::string root = Xale::Core::Helper::getExecutableFolderPath();
+        if (!root.empty())
+        {
+            size_t rootPos = 0;
+            while ((rootPos = outValue.find("__ROOT__", rootPos)) != std::string::npos)
+            {                
+                outValue.replace(rootPos, 8, root);
+                rootPos += root.length();
+            }
+        }
+
         return true;
     }
 

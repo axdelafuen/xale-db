@@ -23,6 +23,9 @@ namespace Xale::Core
             const std::string& getLogOutputDirectory() const noexcept;
             const std::string& getLogFileNameFormat() const noexcept;
             const std::string& getDataFilePath() const noexcept;
+            bool useSSL() const noexcept;
+            const std::string& getServerSSLCert() const noexcept;
+            const std::string& getServerSSLKey() const noexcept;
 
         private:
             static std::unique_ptr<ConfigurationHandler> instance;
@@ -40,7 +43,10 @@ namespace Xale::Core
             std::string _outputFilePath;
             std::string _fileNameFormat;
             std::string _dataFilePath;
+            bool _useSSL;
             bool _loaded = false;
+            std::string _serverSSLCert;
+            std::string _serverSSLKey;
     };
 }
 

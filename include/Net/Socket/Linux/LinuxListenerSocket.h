@@ -35,14 +35,14 @@ namespace Xale::Net
              * @param buffer Buffer to store received data
              * @param size Maximum size to receive
              */
-            int listen(std::string& buffer, size_t size) override;
+            int listen(std::vector<uint8_t>& buffer, size_t size) override;
 
             /**
              * @brief Responds to the connected client with the provided data
              * @param data Data to send
              * @param size Size of data
              */
-            int respond(const std::string* data, size_t size) override; // should be SecurePaquet in the future
+            int respond(const std::vector<uint8_t>* data, size_t size) override;
 
             /**
              * @brief Closes the listener and client sockets

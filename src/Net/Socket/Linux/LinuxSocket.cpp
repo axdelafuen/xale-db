@@ -1,6 +1,6 @@
 #if defined(__linux__) || defined(linux) || defined(__GNUG__)
 
-#include "Net/Socket/LinuxSocket.h"
+#include "Net/Socket/Linux/LinuxSocket.h"
 
 namespace Xale::Net
 {
@@ -36,18 +36,18 @@ namespace Xale::Net
         return true;
     }
 
-    int LinuxSocket::send(const std::string* data, size_t size)
+    int LinuxSocket::send(const std::vector<uint8_t>* data, size_t size)
     {
-        return ::send(_socket, data->c_str(), size, 0);
+        return ::send(_socket, data->data(), size, 0);
     }
 
-    int LinuxSocket::receive(std::string* buffer, size_t size)
+    int LinuxSocket::receive(std::vector<uint8_t>* buffer, size_t size)
     {
         char* tempBuffer = new char[size];
         int bytesRead = ::read(_socket, tempBuffer, size);
         
         if (bytesRead > 0)
-            buffer->assign(tempBuffer, bytesRead);
+            buffer->assign(tempBuffer, tempBuffer + bytesRead);
 
         delete[] tempBuffer;
         return bytesRead;

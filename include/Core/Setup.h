@@ -10,6 +10,9 @@
 #include "Query/BasicParser.h"
 #include "Execution/TableManager.h"
 #include "Execution/BasicExecutor.h"
+#include "Net/Socket/ISocketFactory.h"
+#include "Net/Socket/BasicSocketFactory.h"
+#include "Net/Socket/SSLSocketFactory.h"
 
 #include <string>
 #include <iostream>
@@ -26,6 +29,7 @@ namespace Xale::Core
             bool initialize();
             void shutdown();
             Xale::Engine::QueryEngine& getQueryEngine();
+            std::unique_ptr<Xale::Net::ISocketFactory>& getSocketFactory();
             bool isInitialized() const;
         private:
             static std::unique_ptr<Setup> _instance;
@@ -41,6 +45,7 @@ namespace Xale::Core
             std::unique_ptr<Xale::Execution::TableManager> _tableManager;
             std::unique_ptr<Xale::Execution::BasicExecutor> _executor;
             std::unique_ptr<Xale::Engine::QueryEngine> _queryEngine;
+            std::unique_ptr<Xale::Net::ISocketFactory> _socketFactory;
     };
 }
 

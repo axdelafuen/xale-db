@@ -57,14 +57,34 @@ namespace Xale::Core
                 Xale::Logger::Logger<void>::setLogToFile(true);
             }
             else
+            {
                 Xale::Logger::Logger<void>::setLogToFile(false);
+            }
 
+            if (configHandler.useSSL())
+            {
+                const std::string& SSLCert = configHandler.getServerSSLCert();
+                const std::string& SSLKey = configHandler.getServerSSLKey();
+
+                _socketFactory = std::make_unique<Xale::Net::SSLSocketFactory>(SSLCert, SSLKey);
+                _logger.debug("SSL enabled for network communication");
+            }
+            else
+            {
+                _socketFactory = std::make_unique<Xale::Net::BasicSocketFactory>();
+                _logger.debug("SSL disabled for network communication");
+            }
+            
             _logger.debug("Configuration loaded successfully");
             _logger.debug("Build Type: " + buildType);
             _logger.debug("Default Log Level: " + configHandler.getDefaultLogLevel());
             _logger.debug("Exception Log Level: " + configHandler.getExceptionLogLevel());
             _logger.debug("Log Output Directory: " + logOutputDir);
             _logger.debug("Log File Name Format: " + logFileName);
+            _logger.debug("Data File Path: " + configHandler.getDataFilePath());
+            _logger.debug("Use SSL: " + std::string(configHandler.useSSL() ? "true" : "false"));
+            _logger.debug("SSL Cert File: " + configHandler.getServerSSLCert());
+            _logger.debug("SSL Key File: " + configHandler.getServerSSLKey());
 
             // Setup engines
 
@@ -98,6 +118,11 @@ namespace Xale::Core
         return *_queryEngine;
     }
 
+    std::unique_ptr<Xale::Net::ISocketFactory>& Setup::getSocketFactory()
+    {
+        return _socketFactory;
+    }
+
     bool Setup::isInitialized() const
     {
         return _isSetupDone;
@@ -120,6 +145,10 @@ namespace Xale::Core
             if (_execFm)
             {
                 _execFm.reset();
+            }
+            if (_socketFactory)
+            {
+                _socketFactory.reset();
             }
             _isSetupDone = false;
         }
