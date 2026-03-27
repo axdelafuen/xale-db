@@ -44,11 +44,18 @@ namespace Xale::Net
              * @param buffer Byte vector containing serialized packet
              */
             void deserialize(const std::vector<uint8_t>& buffer) override;
+
             /**
              * @brief Gets the total size of the packet in bytes.
              * @return Size of the packet
              */
             uint32_t size() const override;
+
+            /**
+             * @brief Gets the payload data of the packet.
+             * @return Payload as vector of bytes
+             */
+            std::vector<uint8_t> getPayload() const;
     };
 }
 
