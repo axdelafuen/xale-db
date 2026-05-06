@@ -27,13 +27,7 @@ cmake --build ./build
 
 or using `autorun.sh`
 
-## Run
-
-**Debug:**
-
-```bash
-./build/xale-db-debug
-```
+## Run app
 
 **Server:**
 
@@ -47,12 +41,11 @@ or using `autorun.sh`
 ./build/xale-db-cli
 ```
 
-**Tests:**
-```bash
-./build/xale-db-tests
-```
+In CLI use: `!help` for some quick tips.
 
 ## Usage
+
+_Detailed doc is available on: [xale-db: SQL commands usage](https://axdelafuen.github.io/xale-db/sql-commands-usage.html)_
 
 **Features:**
 
@@ -72,7 +65,7 @@ or using `autorun.sh`
 ### Commands examples
 
 ```
-CREATE TABLE xaleUser (id INT, name STRING, age INT)
+CREATE TABLE xaleUser (id INT, name STRING, age INT);
 ```
 
 > Query OK, table created
@@ -81,7 +74,7 @@ CREATE TABLE xaleUser (id INT, name STRING, age INT)
 
 
 ```
-INSERT INTO xaleUser (id, name, age) VALUES (1, "Alice", 30)
+INSERT INTO xaleUser VALUES (1, "Alice", 30);
 ```
 
 > Query OK, 1 row inserted
@@ -101,14 +94,6 @@ SELECT * FROM xaleUser
 ---
 
 ```
-UPDATE xaleUser SET age = 31 WHERE id = 1
-```
-
-> Query OK, 1 row updated
-
----
-
-```
 SELECT * FROM xaleUser;
 ```
 
@@ -123,6 +108,16 @@ DELETE FROM xaleUser WHERE id = 1;
 ```
 
 > Query OK, 1 row deleted
+
+---
+
+_The_ `UPDATE` _is not implemented yet._
+
+## Run tests
+
+```bash
+./build/xale-db-tests
+```
 
 ## License
 
