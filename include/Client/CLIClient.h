@@ -2,6 +2,8 @@
 #define CLIENT_CLI_CLIENT_H
 
 #include "Client/IClient.h"
+#include <vector>
+#include <string>
 
 namespace Xale::Client
 {
@@ -48,6 +50,14 @@ namespace Xale::Client
              * @return File contents as a string, or empty string on error
              */
             std::string readSqlFile(const std::string& path) const;
+
+            /**
+             * @brief Reads one line from stdin with raw-mode editing support
+             *        (arrow keys for cursor movement and history navigation)
+             */
+            std::string readLine();
+
+            std::vector<std::string> _history;
     };
 }
 
