@@ -4,10 +4,10 @@
 #include <Logger.h>
 
 #include "Net/Socket/IListenerSocket.h"
+#include "Net/Socket/Linux/LinuxSSLClientConnection.h"
 
 #include <string>
-#include <vector>
-#include <cstdint>
+#include <memory>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <sys/socket.h>
@@ -16,25 +16,39 @@
 
 namespace Xale::Net
 {
+    /**
+     * @brief Linux SSL/TLS implementation of IListenerSocket
+     */
     class LinuxSSLListenerSocket : public IListenerSocket
     {
         public:
+            /**
+             * @brief Construct with paths to PEM certificate and key files
+             */
             LinuxSSLListenerSocket(std::string certFile, std::string keyFile);
+
+            /**
+             * @brief Bind and start listening, initialise SSL context
+             */
             bool open(int port) override;
-            int listen(std::vector<uint8_t>& buffer, size_t size) override;
-            int respond(const std::vector<uint8_t>* data, size_t size) override;
+
+            /**
+             * @brief Block until a client connects, perform SSL handshake, return connection
+             * @return IClientConnection for the accepted client, nullptr on error
+             */
+            std::unique_ptr<IClientConnection> acceptClient() override;
+
+            /**
+             * @brief Close the listening socket and free SSL context
+             */
             void close() override;
 
         private:
             Xale::Logger::Logger<LinuxSSLListenerSocket>& _logger;
-            int _socket;
-            int _clientSocket;
-            SSL_CTX* _ctx = nullptr; 
-            SSL* _ssl = nullptr;
+            int      _socket;
+            SSL_CTX* _ctx;
             std::string _certFile;
             std::string _keyFile;
-
-            void cleanupSSL();
     };
 }
 

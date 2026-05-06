@@ -118,6 +118,7 @@ namespace Xale::Query
             case TokenType::StringLiteral:          return "StringLiteral";
             case TokenType::NumericLiteral:         return "NumericLiteral";
             case TokenType::EndOfInput:             return "EndOfInput";
+            case TokenType::Semicolon:              return "Semicolon";
             case TokenType::Unknown:                return "Unknown";
         }
         return "Invalid";
