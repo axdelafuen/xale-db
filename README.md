@@ -4,6 +4,8 @@ XaleDB is a minimal _SQL_ database engine.
 
 checkout technical doc: [xale-db: Main Page](https://axdelafuen.github.io/xale-db/)
 
+> **/!\ Linux only** — Windows support is not implemented yet with OpenSSL. The project builds and runs exclusively on Linux.
+
 ## Dependencies
 
 - xale-logger (a minimal c++ logger: [axdelafuen/xale-logger](https://github.com/axdelafuen/xale-logger/))
