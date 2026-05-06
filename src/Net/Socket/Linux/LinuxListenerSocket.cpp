@@ -5,10 +5,8 @@
 namespace Xale::Net
 {
     LinuxListenerSocket::LinuxListenerSocket()
-        : _logger(Xale::Logger::Logger<LinuxListenerSocket>::getInstance()), 
-        _socket(-1),
-        _clientSocket(-1),
-        _address({})
+        : _logger(Xale::Logger::Logger<LinuxListenerSocket>::getInstance()),
+          _socket(-1)
     {}
 
     bool LinuxListenerSocket::open(int port)
@@ -19,17 +17,21 @@ namespace Xale::Net
             return false;
         }
 
-        _address.sin_family = AF_INET;
-        _address.sin_addr.s_addr = INADDR_ANY;
-        _address.sin_port = htons(port);
+        int opt = 1;
+        ::setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-        if (::bind(_socket, (struct sockaddr*)&_address, sizeof(_address)) < 0) {
+        sockaddr_in address{};
+        address.sin_family      = AF_INET;
+        address.sin_addr.s_addr = INADDR_ANY;
+        address.sin_port        = htons(port);
+
+        if (::bind(_socket, (struct sockaddr*)&address, sizeof(address)) < 0) {
             _logger.error("Bind failed");
             close();
             return false;
         }
 
-        if (::listen(_socket, 3) < 0) {
+        if (::listen(_socket, 16) < 0) {
             _logger.error("Listen failed");
             close();
             return false;
@@ -38,59 +40,28 @@ namespace Xale::Net
         return true;
     }
 
-    int LinuxListenerSocket::listen(std::vector<uint8_t>& buffer, size_t size)
+    std::unique_ptr<IClientConnection> LinuxListenerSocket::acceptClient()
     {
-        if (_clientSocket == -1) {
-            sockaddr_in client_address{};
-            socklen_t client_len = sizeof(client_address);
-            
-            _clientSocket = ::accept(_socket, (struct sockaddr*)&client_address, &client_len);
-            if (_clientSocket < 0) {
-                _logger.error("Accept failed");
-                return -1;
-            }
-            _logger.info("Client connected");
+        sockaddr_in clientAddr{};
+        socklen_t   clientLen = sizeof(clientAddr);
+
+        int clientFd = ::accept(_socket, (struct sockaddr*)&clientAddr, &clientLen);
+        if (clientFd < 0) {
+            _logger.error("Accept failed");
+            return nullptr;
         }
 
-        char* tempBuffer = new char[size];
-        int bytesRead = ::read(_clientSocket, tempBuffer, size);
-        
-        if (bytesRead > 0) {
-            buffer.assign(tempBuffer, tempBuffer + bytesRead);
-        } else if (bytesRead == 0) {
-            _logger.info("Client disconnected");
-            ::close(_clientSocket);
-            _clientSocket = -1;
-        }
-
-        delete[] tempBuffer;
-        return bytesRead;
-    }
-
-    int LinuxListenerSocket::respond(const std::vector<uint8_t>* data, size_t size)
-    {
-        if (_clientSocket == -1) {
-            _logger.error("No client connected to respond to");
-            return -1;
-        }
-
-        int bytesSent = ::send(_clientSocket, data->data(), size, 0);
-        return bytesSent;
+        _logger.info("New client connected");
+        return std::make_unique<LinuxClientConnection>(clientFd);
     }
 
     void LinuxListenerSocket::close()
     {
-        if (_socket != -1)
-        {
+        if (_socket != -1) {
             ::close(_socket);
             _socket = -1;
-        }
-        if (_clientSocket != -1)
-        {
-            ::close(_clientSocket);
-            _clientSocket = -1;
         }
     }
 }
 
-#endif
+#endif // linux

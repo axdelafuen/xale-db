@@ -21,6 +21,7 @@ namespace Xale::Query
         StringLiteral,
         NumericLiteral,
         EndOfInput,
+        Semicolon,
         Unknown
     };
 
@@ -61,7 +62,8 @@ namespace Xale::Query
     // Query keywords
     DECLARE_TOKENS(sql_query_kw,
         "FROM",
-        "WHERE"
+        "WHERE",
+        "ON"
     );
 
     // Join keywords
@@ -116,6 +118,7 @@ namespace Xale::Query
             case TokenType::StringLiteral:          return "StringLiteral";
             case TokenType::NumericLiteral:         return "NumericLiteral";
             case TokenType::EndOfInput:             return "EndOfInput";
+            case TokenType::Semicolon:              return "Semicolon";
             case TokenType::Unknown:                return "Unknown";
         }
         return "Invalid";

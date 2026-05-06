@@ -10,12 +10,55 @@ namespace Xale::Engine
         _results(nullptr),
         _lastStatementType(Xale::Query::StatementType::Unknown)
     {}
-   
+
+    std::vector<std::string> QueryEngine::splitQueries(const std::string& input) const
+    {
+        std::vector<std::string> result;
+        std::string current;
+        bool inSingle = false, inDouble = false;
+
+        for (char c : input)
+        {
+            if (c == '\'' && !inDouble)       inSingle = !inSingle;
+            else if (c == '"' && !inSingle)   inDouble = !inDouble;
+            else if (c == ';' && !inSingle && !inDouble)
+            {
+                size_t s = current.find_first_not_of(" \t\n\r");
+                if (s != std::string::npos)
+                {
+                    size_t e = current.find_last_not_of(" \t\n\r");
+                    result.push_back(current.substr(s, e - s + 1));
+                }
+                current.clear();
+                continue;
+            }
+            current += c;
+        }
+
+        size_t s = current.find_first_not_of(" \t\n\r");
+        if (s != std::string::npos)
+        {
+            size_t e = current.find_last_not_of(" \t\n\r");
+            result.push_back(current.substr(s, e - s + 1));
+        }
+
+        return result;
+    }
+
     bool QueryEngine::run(std::string sqlQuery)
     {
-        auto parsedStmt = _parser->parse(sqlQuery);
-        _lastStatementType = parsedStmt->type;
-        _results = _executor->execute(parsedStmt.get());
+        _multiResponses.clear();
+        _results = nullptr;
+
+        auto queries = splitQueries(sqlQuery);
+        for (const auto& q : queries)
+        {
+            if (q.empty()) continue;
+            auto parsedStmt = _parser->parse(q);
+            _lastStatementType = parsedStmt->type;
+            _results = _executor->execute(parsedStmt.get());
+            _multiResponses.push_back(formatCurrentResult());
+        }
 
         return true;
     }
@@ -30,27 +73,33 @@ namespace Xale::Engine
    
     std::string QueryEngine::getResultsToString()
     {
+        if (_multiResponses.empty())
+            return "No query executed";
+
+        std::string combined;
+        for (const auto& r : _multiResponses)
+        {
+            if (!combined.empty()) combined += "\n";
+            combined += r;
+        }
+        return combined;
+    }
+
+    std::string QueryEngine::formatCurrentResult()
+    {
         if (_results == nullptr)
-            return "No query runned!";
+            return "Query executed";
 
         switch (_lastStatementType)
         {
-            case Xale::Query::StatementType::Select:
-                return formatSelectResult();
-            case Xale::Query::StatementType::Insert:
-                return formatInsertResult();
-            case Xale::Query::StatementType::Update:
-                return formatUpdateResult();
-            case Xale::Query::StatementType::Delete:
-                return formatDeleteResult();
-            case Xale::Query::StatementType::Create:
-                return formatCreateResult();
-            case Xale::Query::StatementType::Drop:
-                return formatDropResult();
-            case Xale::Query::StatementType::List:
-                return formatSelectResult();
-            default:
-                return "Query executed";
+            case Xale::Query::StatementType::Select:  return formatSelectResult();
+            case Xale::Query::StatementType::Insert:  return formatInsertResult();
+            case Xale::Query::StatementType::Update:  return formatUpdateResult();
+            case Xale::Query::StatementType::Delete:  return formatDeleteResult();
+            case Xale::Query::StatementType::Create:  return formatCreateResult();
+            case Xale::Query::StatementType::Drop:    return formatDropResult();
+            case Xale::Query::StatementType::List:    return formatSelectResult();
+            default: return "Query executed";
         }
     }
 

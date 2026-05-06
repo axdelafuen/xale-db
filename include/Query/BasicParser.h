@@ -153,6 +153,13 @@ namespace Xale::Query
             std::unique_ptr<ListStatement> parseList();
 
             /**
+             * @brief Parse a JOIN clause (tableName ON left = right)
+             * @return Parsed JoinClause
+             * @throws DbException if syntax is invalid
+             */
+            JoinClause parseJoinClause();
+
+            /**
              * @brief Parse an expression
              * @return Unique pointer to Expression
              * @throws DbException if syntax is invalid

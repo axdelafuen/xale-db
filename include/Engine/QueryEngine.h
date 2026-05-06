@@ -7,6 +7,7 @@
 #include "DataStructure/ResultSet.h"
 
 #include <string>
+#include <vector>
 #include <memory>
 
 namespace Xale::Engine
@@ -26,9 +27,9 @@ namespace Xale::Engine
                 Xale::Execution::IExecutor* executor);
                 
             /**
-             * @brief Run the given string query
-             * @param sqlQuery The SQL string query
-             * @return True if the execution run well, False otherwise
+             * @brief Run one or more semicolon-separated SQL queries
+             * @param sqlQuery The SQL string query (may contain multiple statements separated by ';')
+             * @return True if all executions ran successfully
              */
             bool run(std::string sqlQuery);
 
@@ -39,8 +40,8 @@ namespace Xale::Engine
             std::unique_ptr<Xale::DataStructure::ResultSet> getResults();
 
             /**
-             * @brief Get the last runned query results as a formatted string
-             * @return a string representing the last runned query results
+             * @brief Get all query results as a formatted string (multi-query aware)
+             * @return a string representing all executed query results
              */
             std::string getResultsToString();
             
@@ -49,6 +50,20 @@ namespace Xale::Engine
             Xale::Execution::IExecutor* _executor;
             std::unique_ptr<Xale::DataStructure::ResultSet> _results;
             Xale::Query::StatementType _lastStatementType;
+            std::vector<std::string> _multiResponses; ///< Accumulated responses for multi-query
+
+            /**
+             * @brief Split input by semicolons, respecting string literals
+             * @param input Raw SQL input string
+             * @return Vector of individual query strings
+             */
+            std::vector<std::string> splitQueries(const std::string& input) const;
+
+            /**
+             * @brief Format the current _results based on _lastStatementType
+             * @return Formatted result string
+             */
+            std::string formatCurrentResult();
 
             /**
              * @brief Format the results of a SELECT statement as a string

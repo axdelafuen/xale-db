@@ -191,6 +191,8 @@ namespace Xale::DataStructure
 			buffer.push_back(isPK);
 			char isNull = col.isNullable ? 1 : 0;
 			buffer.push_back(isNull);
+			writeString(col.refTable);
+			writeString(col.refColumn);
 		}
 		
 		// Write rows
@@ -274,8 +276,10 @@ namespace Xale::DataStructure
 			FieldType type = static_cast<FieldType>(typeInt);
 			bool isPK = data[offset++] == 1;
 			bool isNull = data[offset++] == 1;
+			std::string refTable = readString();
+			std::string refColumn = readString();
 			
-			table.addColumn(ColumnDefinition(colName, type, isPK, isNull));
+			table.addColumn(ColumnDefinition(colName, type, isPK, isNull, refTable, refColumn));
 		}
 		
 		// Read rows

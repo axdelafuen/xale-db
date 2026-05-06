@@ -29,16 +29,138 @@ namespace Xale::Execution
 
 		auto resultSet = std::make_unique<Xale::DataStructure::ResultSet>();
 
-		if (stmt->columns.size() == 1 && stmt->columns[0].type == Xale::Query::ExpressionType::Wildcard)
-			for (const auto& col : table->getSchema()) resultSet->addColumn(col);
-		else
-			for (const auto& col : stmt->columns) resultSet->addColumn(Xale::DataStructure::ColumnDefinition(col.value, Xale::DataStructure::FieldType::String));
-		
-		for (const auto& row : table->getRows())
-        {
-			if (stmt->where && !evaluateCondition(row, stmt->where.get())) continue;
-			resultSet->addRow(row);
+		// Helper: extract column name from "table.column" or plain "column"
+		auto colNamePart = [](const std::string& s) -> std::string {
+			auto dot = s.rfind('.');
+			return dot != std::string::npos ? s.substr(dot + 1) : s;
+		};
+
+		bool isWildcard = stmt->columns.size() == 1 &&
+		                  stmt->columns[0].type == Xale::Query::ExpressionType::Wildcard;
+
+		if (stmt->joins.empty())
+		{
+			// Original single-table path
+			if (isWildcard)
+				for (const auto& col : table->getSchema()) resultSet->addColumn(col);
+			else
+				for (const auto& col : stmt->columns)
+					resultSet->addColumn(Xale::DataStructure::ColumnDefinition(colNamePart(col.value), Xale::DataStructure::FieldType::String));
+			
+			for (const auto& row : table->getRows())
+			{
+				if (stmt->where && !evaluateCondition(row, stmt->where.get())) continue;
+				if (isWildcard)
+				{
+					resultSet->addRow(row);
+				}
+				else
+				{
+					Xale::DataStructure::Row projected;
+					for (const auto& col : stmt->columns)
+					{
+						std::string name = colNamePart(col.value);
+						for (const auto& field : row.fields)
+							if (field.name == name) { projected.fields.push_back(field); break; }
+					}
+					resultSet->addRow(projected);
+				}
+			}
 		}
+		else
+		{
+			// JOIN path: build merged rows via nested-loop join
+			std::vector<Xale::DataStructure::Row> mergedRows = table->getRows();
+
+			for (const auto& join : stmt->joins)
+			{
+				auto joinTable = _tableManager.getTable(join.tableName);
+				if (!joinTable)
+					THROW_DB_EXCEPTION(Xale::Core::ExceptionCode::ExecutionError, "JOIN table does not exist: " + join.tableName);
+
+				std::string leftCol  = colNamePart(join.leftTableCol);
+				std::string rightCol = colNamePart(join.rightTableCol);
+
+				std::vector<Xale::DataStructure::Row> newMerged;
+				for (const auto& leftRow : mergedRows)
+				{
+					Xale::DataStructure::FieldValue leftVal;
+					bool foundLeft = false;
+					for (const auto& f : leftRow.fields)
+						if (f.name == leftCol) { leftVal = f.value; foundLeft = true; break; }
+
+					if (!foundLeft) continue;
+
+					for (const auto& rightRow : joinTable->getRows())
+					{
+						Xale::DataStructure::FieldValue rightVal;
+						bool foundRight = false;
+						for (const auto& f : rightRow.fields)
+							if (f.name == rightCol) { rightVal = f.value; foundRight = true; break; }
+
+						// Compare values with type coercion (int vs double)
+						auto valuesEqual = [](const Xale::DataStructure::FieldValue& a, const Xale::DataStructure::FieldValue& b) -> bool {
+							if (a == b) return true;
+							if (std::holds_alternative<int>(a) && std::holds_alternative<double>(b))
+								return static_cast<double>(std::get<int>(a)) == std::get<double>(b);
+							if (std::holds_alternative<double>(a) && std::holds_alternative<int>(b))
+								return std::get<double>(a) == static_cast<double>(std::get<int>(b));
+							return false;
+						};
+
+						if (foundRight && valuesEqual(leftVal, rightVal))
+						{
+							Xale::DataStructure::Row merged;
+							merged.fields = leftRow.fields;
+							for (const auto& f : rightRow.fields)
+								merged.fields.push_back(f);
+							newMerged.push_back(merged);
+						}
+					}
+				}
+				mergedRows = std::move(newMerged);
+			}
+
+			// Build result schema
+			if (isWildcard)
+			{
+				for (const auto& col : table->getSchema()) resultSet->addColumn(col);
+				for (const auto& join : stmt->joins)
+				{
+					auto jt = _tableManager.getTable(join.tableName);
+					if (jt)
+						for (const auto& col : jt->getSchema()) resultSet->addColumn(col);
+				}
+			}
+			else
+			{
+				for (const auto& col : stmt->columns)
+					resultSet->addColumn(Xale::DataStructure::ColumnDefinition(colNamePart(col.value), Xale::DataStructure::FieldType::String));
+			}
+
+			// Apply WHERE and project
+			for (const auto& row : mergedRows)
+			{
+				if (stmt->where && !evaluateCondition(row, stmt->where.get())) continue;
+
+				if (isWildcard)
+				{
+					resultSet->addRow(row);
+				}
+				else
+				{
+					Xale::DataStructure::Row projected;
+					for (const auto& col : stmt->columns)
+					{
+						std::string name = colNamePart(col.value);
+						for (const auto& field : row.fields)
+							if (field.name == name) { projected.fields.push_back(field); break; }
+					}
+					resultSet->addRow(projected);
+				}
+			}
+		}
+
 		return resultSet;
 	}
 
@@ -125,7 +247,10 @@ namespace Xale::Execution
 				table->addColumn(Xale::DataStructure::ColumnDefinition(
 					colDef.name,
 					fieldType,
-					colDef.isPrimaryKey
+					colDef.isPrimaryKey,
+					true,
+					colDef.references.refTable,
+					colDef.references.refColumn
 				));
 			}
 		}
@@ -173,7 +298,10 @@ namespace Xale::Execution
 				catch (...) { return 0; }
 			case Xale::Query::ExpressionType::StringLiteral: {
 				std::string str = expr.value;
-				if (str.length() >= 2 && str.front() == '\'' && str.back() == '\'') str = str.substr(1, str.length() - 2);
+				if (str.length() >= 2 &&
+				    ((str.front() == '\'' && str.back() == '\'') ||
+				     (str.front() == '"'  && str.back() == '"')))
+					str = str.substr(1, str.length() - 2);
 				return str;
 			}
 			case Xale::Query::ExpressionType::Identifier: return expr.value;
@@ -194,9 +322,14 @@ namespace Xale::Execution
 			
 			if (binary->left->type != Xale::Query::ExpressionType::Identifier)
 				return true;
-			
+
 			std::string columnName = binary->left->value;
-			
+			// Strip optional table prefix (e.g. "users.id" -> "id")
+			{
+				auto dot = columnName.rfind('.');
+				if (dot != std::string::npos) columnName = columnName.substr(dot + 1);
+			}
+
 			Xale::DataStructure::FieldValue leftValue;
 			bool found = false;
 			for (const auto& field : row.fields)

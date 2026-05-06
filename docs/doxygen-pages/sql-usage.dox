@@ -1,29 +1,46 @@
 /** \page sql-commands-usage SQL commands usage
 
-_for now_ `,` _is not recognized!_
-
 ## Types
 
 - `INT`
 - `FLOAT`
-- `STRING`
+- `STRING` (aliases: `VARCHAR`, `TEXT`)
 - `NULL`
 
 ## Operators
 
 - `=`, `!=`, `<`, `>`, `<=`, `>=`
 
+## String literals
+
+Both single and double quotes are accepted:
+
+```sql
+'hello world'
+"hello world"
+```
+
+## Multi-statement queries
+
+Statements can be chained in a single request using `;` as separator:
+
+```sql
+INSERT INTO users VALUES (1, 'Alice'); INSERT INTO users VALUES (2, 'Bob');
+```
+
 ## Table definitions
 
 __Create a table:__
 
 ```sql
-CREATE TABLE `table_name` (`col_1_name` [TYPE], `col_2_name` [TYPE], ...)
+CREATE TABLE `table_name` (
+    `col_1_name` [TYPE] [PRIMARY KEY],
+    `col_2_name` [TYPE] [REFERENCES `other_table`(`other_col`)],
+    ...
+)
 ```
 
-__Update a table:__
-
-_Not implemented yet!_
+A column marked `REFERENCES` declares a foreign-key relationship used for `JOIN` queries.
 
 __Delete a table:__
 
@@ -37,38 +54,95 @@ __List all tables stored:__
 LIST TABLE
 ```
 
+__Update a table schema:__
+
+_Not implemented yet._
+
 ## Table content manipulation
+
+__Insert data into a table:__
+
+Parentheses around the value list are optional.
+
+```sql
+INSERT INTO `table_name` VALUES (`value1`, `value2`, ...)
+INSERT INTO `table_name` VALUES  `value1`, `value2`, ...
+```
 
 __Select data from a table:__
 
 ```sql
-SELECT `col_1_name`, `col_2_name`, ... 
-FROM `table_name` 
+SELECT `col_1_name`, `col_2_name`, ...
+FROM `table_name`
 WHERE `col_x_name` [OPERATOR] `value`
 ```
 
-__Insert data into a table:__
+Use `*` to select all columns:
 
 ```sql
-INSERT INTO `table_name` VALUES `value1`, `value2`
+SELECT * FROM `table_name`
 ```
 
-`value1` _correspond to:_ `col_1_name`
+__Join two tables:__
+
+```sql
+SELECT `t1`.`col_a`, `t2`.`col_b`
+FROM `table_1` JOIN `table_2` ON `table_1`.`col` = `table_2`.`col`
+WHERE `t1`.`col_x` [OPERATOR] `value`
+```
+
+Column references in `ON` and `WHERE` clauses accept the `table.column` dotted notation.
 
 __Update data of a table:__
 
-_Not implemented yet!_
+_Not implemented yet._
 
-__Delete data of a table:__
+__Delete data from a table:__
 
 ```sql
-DELETE * 
-FROM `table_name` 
+DELETE FROM `table_name`
 WHERE `col_x_name` [OPERATOR] `value`
 ```
 
-### Joins
+## Example
 
-_Not implemented yet!_
+The file `examples/simple-test.sql` demonstrates table creation with foreign keys and a join query:
+
+```sql
+LIST TABLE;
+
+CREATE TABLE table_1 (id INT PRIMARY KEY, name STRING);
+
+CREATE TABLE table_2 (id INT PRIMARY KEY, t1Id INT REFERENCES table_1(id), addr STRING);
+
+LIST TABLE;
+
+INSERT INTO table_1 VALUES (1, "name1");
+INSERT INTO table_1 VALUES (2, "name2");
+
+INSERT INTO table_2 VALUES (1, 1, "addr1_of_name1");
+INSERT INTO table_2 VALUES (2, 1, "addr2_of_name1");
+INSERT INTO table_2 VALUES (3, 2, "addr1_of_name2");
+
+SELECT * FROM table_1;
+SELECT * FROM table_2;
+
+SELECT table_1.name, table_2.addr
+FROM table_1 JOIN table_2 ON table_1.id = table_2.t1Id;
+```
+
+This file can be executed directly from the CLI using:
+
+```
+!file examples/simple-test.sql
+```
+
+## CLI commands
+
+| Command | Description |
+|---------|-------------|
+| `!help` | Print the command reference |
+| `!file <path.sql>` | Execute all queries from a SQL file |
+| `exit` / `quit` | Close the connection |
 
 */

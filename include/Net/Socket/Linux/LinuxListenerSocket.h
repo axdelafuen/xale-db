@@ -1,9 +1,13 @@
 #ifndef NET_LINUX_LISTENER_SOCKET_H
 #define NET_LINUX_LISTENER_SOCKET_H
 
+#if defined(__linux__) || defined(linux) || defined(__GNUG__)
+
 #include <Logger.h>
 
 #include "Net/Socket/IListenerSocket.h"
+#include "Net/Socket/Linux/LinuxClientConnection.h"
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -14,7 +18,7 @@
 namespace Xale::Net
 {
     /**
-     * @brief Linux implementation of IListenerSocket
+     * @brief Linux raw TCP implementation of IListenerSocket
      */
     class LinuxListenerSocket : public IListenerSocket
     {
@@ -25,35 +29,27 @@ namespace Xale::Net
             LinuxListenerSocket();
 
             /**
-             * @brief Opens the listener socket on the specified port
+             * @brief Bind and start listening on the given port
              * @param port Port number
              */
             bool open(int port) override;
 
             /**
-             * @brief Listens for incoming client connections and reads data into the buffer
-             * @param buffer Buffer to store received data
-             * @param size Maximum size to receive
+             * @brief Block until a client connects, return a connection object
+             * @return IClientConnection for the accepted client, nullptr on error
              */
-            int listen(std::vector<uint8_t>& buffer, size_t size) override;
+            std::unique_ptr<IClientConnection> acceptClient() override;
 
             /**
-             * @brief Responds to the connected client with the provided data
-             * @param data Data to send
-             * @param size Size of data
-             */
-            int respond(const std::vector<uint8_t>* data, size_t size) override;
-
-            /**
-             * @brief Closes the listener and client sockets
+             * @brief Close the listening socket
              */
             void close() override;
+
         private:
             Xale::Logger::Logger<LinuxListenerSocket>& _logger;
             int _socket;
-            int _clientSocket;
-            sockaddr_in _address;
     };
 }
 
+#endif // linux
 #endif // NET_LINUX_LISTENER_SOCKET_H
