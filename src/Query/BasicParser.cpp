@@ -21,6 +21,10 @@ namespace Xale::Query
 
         auto stmt = parseStatement();
 
+        // Optionally consume a trailing semicolon
+        if (match(TokenType::Semicolon))
+            advance();
+
         if (!match(TokenType::EndOfInput))
             throwError("Unexpected tokens after statement");
 
@@ -147,6 +151,17 @@ namespace Xale::Query
         stmt->tableName = _currentToken.lexeme;
         advance();
 
+        // Optional JOIN clauses
+        while (match(TokenType::JoinKeyword))
+        {
+            std::string kw = _currentToken.lexeme;
+            std::transform(kw.begin(), kw.end(), kw.begin(), ::toupper);
+            if (kw == "JOIN")
+                stmt->joins.push_back(parseJoinClause());
+            else
+                break; // LEFT / RIGHT not yet supported
+        }
+
         if (matchKeyword("WHERE"))
             stmt->where = parseWhereClause();
 
@@ -172,6 +187,11 @@ namespace Xale::Query
         
         advance();
 
+        // Optional opening parenthesis
+        bool hasParen = match(TokenType::Operator) && _currentToken.lexeme == "(";
+        if (hasParen)
+            advance();
+
         do
         {
             auto expr = parsePrimary();
@@ -185,6 +205,14 @@ namespace Xale::Query
             else
                 break;
         } while (true);
+
+        // Optional closing parenthesis
+        if (hasParen)
+        {
+            if (!match(TokenType::Operator) || _currentToken.lexeme != ")")
+                throwError("Expected ')' after VALUES list");
+            advance();
+        }
 
         return stmt;
     }
@@ -299,6 +327,25 @@ namespace Xale::Query
                         throwError("Expected KEY after PRIMARY");
                     advance();
                     colDef.isPrimaryKey = true;
+                }
+
+                // Optional REFERENCES clause
+                if (matchIdentifier("REFERENCES"))
+                {
+                    advance();
+                    expect(TokenType::Identifier, "Expected referenced table name");
+                    colDef.references.refTable = _currentToken.lexeme;
+                    advance();
+                    if (match(TokenType::Operator) && _currentToken.lexeme == "(")
+                    {
+                        advance();
+                        expect(TokenType::Identifier, "Expected referenced column name");
+                        colDef.references.refColumn = _currentToken.lexeme;
+                        advance();
+                        if (!match(TokenType::Operator) || _currentToken.lexeme != ")")
+                            throwError("Expected ')' after referenced column");
+                        advance();
+                    }
                 }
 
                 stmt->columns.push_back(colDef);
@@ -437,5 +484,34 @@ namespace Xale::Query
             throwError("Expected condition expression");
 
         return std::make_unique<WhereClause>(std::move(condition));
+    }
+
+    JoinClause BasicParser::parseJoinClause()
+    {
+        JoinClause clause;
+
+        // Current token is "JOIN" (JoinKeyword)
+        advance(); // consume JOIN
+
+        expect(TokenType::Identifier, "Expected table name after JOIN");
+        clause.tableName = _currentToken.lexeme;
+        advance();
+
+        expectKeyword("ON", "Expected ON after JOIN table name");
+        advance();
+
+        expect(TokenType::Identifier, "Expected column reference in JOIN condition");
+        clause.leftTableCol = _currentToken.lexeme;
+        advance();
+
+        if (!match(TokenType::Operator) || _currentToken.lexeme != "=")
+            throwError("Expected '=' in JOIN ON condition");
+        advance();
+
+        expect(TokenType::Identifier, "Expected column reference in JOIN condition");
+        clause.rightTableCol = _currentToken.lexeme;
+        advance();
+
+        return clause;
     }
 }

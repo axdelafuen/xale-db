@@ -68,6 +68,21 @@ namespace Xale::Query
             while (!isAtEnd() && (std::isalnum(currentChar()) || currentChar() == '_'))
                 goNextChar();
 
+            // Handle dotted identifiers (e.g. table.column)
+            if (!isAtEnd() && currentChar() == '.')
+            {
+                size_t savedPos = _pos;
+                goNextChar(); // consume '.'
+                if (!isAtEnd() && (std::isalpha(currentChar()) || currentChar() == '_'))
+                {
+                    while (!isAtEnd() && (std::isalnum(currentChar()) || currentChar() == '_'))
+                        goNextChar();
+                    return { TokenType::Identifier, _input.substr(start, _pos - start), start };
+                }
+                else
+                    _pos = savedPos; // backtrack, dot is not part of this identifier
+            }
+
             std::string text = _input.substr(start, _pos - start);
             std::string upper = text;
             std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
@@ -110,10 +125,11 @@ namespace Xale::Query
             };
         }
 
-        // String literals: 'text'
-        if (c == '\'')
+        // String literals: 'text' or "text"
+        if (c == '\'' || c == '"')
         {
-            while (!isAtEnd() && currentChar() != '\'')
+            char delimiter = c;
+            while (!isAtEnd() && currentChar() != delimiter)
                 goNextChar();
 
             if (!isAtEnd())
@@ -125,6 +141,10 @@ namespace Xale::Query
                 start 
             };
         }
+
+        // Semicolon
+        if (c == ';')
+            return { TokenType::Semicolon, ";", start };
 
         // Operators
         // Try two-character operators

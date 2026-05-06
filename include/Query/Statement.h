@@ -93,12 +93,23 @@ namespace Xale::Query
     };
 
     /**
+     * @brief Represents a JOIN clause (INNER JOIN only for now)
+     */
+    struct JoinClause
+    {
+        std::string tableName;      ///< Joined table name
+        std::string leftTableCol;   ///< Left side of ON condition (e.g. "orders.user_id")
+        std::string rightTableCol;  ///< Right side of ON condition (e.g. "users.id")
+    };
+
+    /**
      * @brief SELECT statement structure
      */
     struct SelectStatement : public Statement
     {
         std::vector<Expression> columns;
         std::string tableName;
+        std::vector<JoinClause> joins; ///< Optional JOIN clauses
         std::unique_ptr<WhereClause> where;
 
         SelectStatement() : Statement(StatementType::Select) {}
@@ -140,6 +151,15 @@ namespace Xale::Query
     };
 
     /**
+     * @brief Represents a REFERENCES clause in a column definition
+     */
+    struct ForeignKeyRef
+    {
+        std::string refTable;  ///< Referenced table name
+        std::string refColumn; ///< Referenced column name (may be empty)
+    };
+
+    /**
      * @brief Column definition for CREATE TABLE statement structure
      */
     struct ColumnDefinitionStmt
@@ -147,6 +167,7 @@ namespace Xale::Query
         std::string name;
         std::string type;
         bool isPrimaryKey;
+        ForeignKeyRef references; ///< Empty refTable means no FK
 
         ColumnDefinitionStmt() : isPrimaryKey(false) {}
         ColumnDefinitionStmt(std::string n, std::string t, bool pk = false)

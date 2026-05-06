@@ -21,6 +21,7 @@ namespace Xale::Query
         StringLiteral,
         NumericLiteral,
         EndOfInput,
+        Semicolon,
         Unknown
     };
 
@@ -61,7 +62,8 @@ namespace Xale::Query
     // Query keywords
     DECLARE_TOKENS(sql_query_kw,
         "FROM",
-        "WHERE"
+        "WHERE",
+        "ON"
     );
 
     // Join keywords

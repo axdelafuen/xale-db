@@ -58,9 +58,13 @@ namespace Xale::DataStructure
         FieldType type;
         bool isPrimaryKey;
         bool isNullable;
+        std::string refTable;  ///< Referenced table (FK), empty if none
+        std::string refColumn; ///< Referenced column (FK), empty if none
 
-        ColumnDefinition(std::string n, FieldType t, bool pk = false, bool nullable = true)
-            : name(std::move(n)), type(t), isPrimaryKey(pk), isNullable(nullable) {
+        ColumnDefinition(std::string n, FieldType t, bool pk = false, bool nullable = true,
+                         std::string refTbl = "", std::string refCol = "")
+            : name(std::move(n)), type(t), isPrimaryKey(pk), isNullable(nullable),
+              refTable(std::move(refTbl)), refColumn(std::move(refCol)) {
         }
     };
 }
