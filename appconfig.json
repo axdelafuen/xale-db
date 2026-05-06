@@ -8,5 +8,8 @@
         "OutputFilePath": "__ROOT__/../Logs/",
         "FileNameFormat": "__DD__-__MM__-__YYYY__-xale-db.log"
     },
-    "DataFilePath": "__ROOT__/release-engine-storage.bin"
+    "DataFilePath": "__ROOT__/release-engine-storage.bin",
+    "UseSSL": "true",
+    "SSLCert": "__ROOT__/server_cert.pem",
+    "SSLKey": "__ROOT__/server_key.pem"
 }

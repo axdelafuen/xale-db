@@ -7,6 +7,7 @@ checkout technical doc: [xale-db: Main Page](https://axdelafuen.github.io/xale-d
 ## Dependencies
 
 - xale-logger (a minimal c++ logger: [axdelafuen/xale-logger](https://github.com/axdelafuen/xale-logger/))
+- OpenSSL (cryptography and secure communication library: [openssl-library.org](https://openssl-library.org/))
 
 ## Build
 

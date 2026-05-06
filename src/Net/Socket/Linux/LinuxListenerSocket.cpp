@@ -1,6 +1,6 @@
 #if defined(__linux__) || defined(linux) || defined(__GNUG__)
 
-#include "Net/Socket/LinuxListenerSocket.h"
+#include "Net/Socket/Linux/LinuxListenerSocket.h"
 
 namespace Xale::Net
 {
@@ -38,7 +38,7 @@ namespace Xale::Net
         return true;
     }
 
-    int LinuxListenerSocket::listen(std::string& buffer, size_t size)
+    int LinuxListenerSocket::listen(std::vector<uint8_t>& buffer, size_t size)
     {
         if (_clientSocket == -1) {
             sockaddr_in client_address{};
@@ -56,7 +56,7 @@ namespace Xale::Net
         int bytesRead = ::read(_clientSocket, tempBuffer, size);
         
         if (bytesRead > 0) {
-            buffer.assign(tempBuffer, bytesRead);
+            buffer.assign(tempBuffer, tempBuffer + bytesRead);
         } else if (bytesRead == 0) {
             _logger.info("Client disconnected");
             ::close(_clientSocket);
@@ -67,14 +67,14 @@ namespace Xale::Net
         return bytesRead;
     }
 
-    int LinuxListenerSocket::respond(const std::string* data, size_t size)
+    int LinuxListenerSocket::respond(const std::vector<uint8_t>* data, size_t size)
     {
         if (_clientSocket == -1) {
             _logger.error("No client connected to respond to");
             return -1;
         }
 
-        int bytesSent = ::send(_clientSocket, data->c_str(), size, 0);
+        int bytesSent = ::send(_clientSocket, data->data(), size, 0);
         return bytesSent;
     }
 

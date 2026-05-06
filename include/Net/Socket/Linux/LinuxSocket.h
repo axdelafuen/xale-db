@@ -39,14 +39,14 @@ namespace Xale::Net
              * @param data Data to send
              * @param size Size of data
              */
-            int send(const std::string* data, size_t size) override; // should be SecurePaquet in the future
+            int send(const std::vector<uint8_t>* data, size_t size) override;
 
             /**
              * @brief Receive data from the socket
              * @param buffer Buffer to store received data
              * @param size Maximum size to receive
              */
-            int receive(std::string* buffer, size_t size) override;
+            int receive(std::vector<uint8_t>* buffer, size_t size) override;
 
             /**
              * @brief Close the socket
