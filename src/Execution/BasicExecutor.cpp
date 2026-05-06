@@ -98,7 +98,17 @@ namespace Xale::Execution
 						for (const auto& f : rightRow.fields)
 							if (f.name == rightCol) { rightVal = f.value; foundRight = true; break; }
 
-						if (foundRight && leftVal == rightVal)
+						// Compare values with type coercion (int vs double)
+						auto valuesEqual = [](const Xale::DataStructure::FieldValue& a, const Xale::DataStructure::FieldValue& b) -> bool {
+							if (a == b) return true;
+							if (std::holds_alternative<int>(a) && std::holds_alternative<double>(b))
+								return static_cast<double>(std::get<int>(a)) == std::get<double>(b);
+							if (std::holds_alternative<double>(a) && std::holds_alternative<int>(b))
+								return std::get<double>(a) == static_cast<double>(std::get<int>(b));
+							return false;
+						};
+
+						if (foundRight && valuesEqual(leftVal, rightVal))
 						{
 							Xale::DataStructure::Row merged;
 							merged.fields = leftRow.fields;
@@ -312,9 +322,14 @@ namespace Xale::Execution
 			
 			if (binary->left->type != Xale::Query::ExpressionType::Identifier)
 				return true;
-			
+
 			std::string columnName = binary->left->value;
-			
+			// Strip optional table prefix (e.g. "users.id" -> "id")
+			{
+				auto dot = columnName.rfind('.');
+				if (dot != std::string::npos) columnName = columnName.substr(dot + 1);
+			}
+
 			Xale::DataStructure::FieldValue leftValue;
 			bool found = false;
 			for (const auto& field : row.fields)

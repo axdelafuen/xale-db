@@ -344,6 +344,169 @@ namespace Xale::Tests
             return true; // Expected exception
         }
     }
+
+    DECLARE_EXECUTOR_TEST(select_join)
+    {
+        try
+        {
+            Xale::Storage::BinaryFileManager fm;
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-select_join.bin");
+            storage.startup();
+
+            Xale::Execution::TableManager manager(storage, fm);
+            Xale::Execution::BasicExecutor executor(manager);
+
+            // Create users table
+            {
+                auto stmt = std::make_unique<Xale::Query::CreateStatement>();
+                stmt->tableName = "users";
+                executor.execute(stmt.get());
+                auto* t = manager.getTable("users");
+                t->addColumn(Xale::DataStructure::ColumnDefinition("id",   Xale::DataStructure::FieldType::Integer, true));
+                t->addColumn(Xale::DataStructure::ColumnDefinition("name", Xale::DataStructure::FieldType::String));
+            }
+
+            // Create orders table
+            {
+                auto stmt = std::make_unique<Xale::Query::CreateStatement>();
+                stmt->tableName = "orders";
+                executor.execute(stmt.get());
+                auto* t = manager.getTable("orders");
+                t->addColumn(Xale::DataStructure::ColumnDefinition("user_id", Xale::DataStructure::FieldType::Integer));
+                t->addColumn(Xale::DataStructure::ColumnDefinition("product", Xale::DataStructure::FieldType::String));
+            }
+
+            // INSERT INTO users VALUES (1, 'Alice')
+            {
+                auto stmt = std::make_unique<Xale::Query::InsertStatement>();
+                stmt->tableName = "users";
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "1"));
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'Alice'"));
+                executor.execute(stmt.get());
+            }
+
+            // INSERT INTO users VALUES (2, 'Bob')
+            {
+                auto stmt = std::make_unique<Xale::Query::InsertStatement>();
+                stmt->tableName = "users";
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "2"));
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'Bob'"));
+                executor.execute(stmt.get());
+            }
+
+            // INSERT INTO orders VALUES (1, 'Book') -- user_id = 1
+            {
+                auto stmt = std::make_unique<Xale::Query::InsertStatement>();
+                stmt->tableName = "orders";
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, "1"));
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'Book'"));
+                executor.execute(stmt.get());
+            }
+
+            // SELECT * FROM users JOIN orders ON users.id = orders.user_id
+            auto selectStmt = std::make_unique<Xale::Query::SelectStatement>();
+            selectStmt->tableName = "users";
+            selectStmt->columns.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::Wildcard, "*"));
+            Xale::Query::JoinClause join;
+            join.tableName     = "orders";
+            join.leftTableCol  = "users.id";
+            join.rightTableCol = "orders.user_id";
+            selectStmt->joins.push_back(join);
+
+            auto result = executor.execute(selectStmt.get());
+
+            // Expect 1 row (only user 1 has an order)
+            bool success = result && result->getRowCount() == 1 && result->getColumnCount() == 4;
+
+            storage.shutdown();
+            return success;
+        }
+        catch (const Xale::Core::DbException&)
+        {
+            return false;
+        }
+    }
+
+    DECLARE_EXECUTOR_TEST(select_join_where_dotted)
+    {
+        try
+        {
+            Xale::Storage::BinaryFileManager fm;
+            Xale::Storage::FileStorageEngine storage(fm, "test-executor-join_where_dot.bin");
+            storage.startup();
+
+            Xale::Execution::TableManager manager(storage, fm);
+            Xale::Execution::BasicExecutor executor(manager);
+
+            // users
+            {
+                auto stmt = std::make_unique<Xale::Query::CreateStatement>();
+                stmt->tableName = "users2";
+                executor.execute(stmt.get());
+                auto* t = manager.getTable("users2");
+                t->addColumn(Xale::DataStructure::ColumnDefinition("id",   Xale::DataStructure::FieldType::Integer, true));
+                t->addColumn(Xale::DataStructure::ColumnDefinition("name", Xale::DataStructure::FieldType::String));
+            }
+            // orders
+            {
+                auto stmt = std::make_unique<Xale::Query::CreateStatement>();
+                stmt->tableName = "orders2";
+                executor.execute(stmt.get());
+                auto* t = manager.getTable("orders2");
+                t->addColumn(Xale::DataStructure::ColumnDefinition("user_id", Xale::DataStructure::FieldType::Integer));
+                t->addColumn(Xale::DataStructure::ColumnDefinition("product", Xale::DataStructure::FieldType::String));
+            }
+
+            auto insertUser = [&](int id, const std::string& name) {
+                auto stmt = std::make_unique<Xale::Query::InsertStatement>();
+                stmt->tableName = "users2";
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, std::to_string(id)));
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'" + name + "'"));
+                executor.execute(stmt.get());
+            };
+            auto insertOrder = [&](int uid, const std::string& prod) {
+                auto stmt = std::make_unique<Xale::Query::InsertStatement>();
+                stmt->tableName = "orders2";
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::NumericLiteral, std::to_string(uid)));
+                stmt->values.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::StringLiteral, "'" + prod + "'"));
+                executor.execute(stmt.get());
+            };
+
+            insertUser(1, "Alice"); insertUser(2, "Bob");
+            insertOrder(1, "Book"); insertOrder(2, "Pen");
+
+            // SELECT * FROM users2 JOIN orders2 ON users2.id = orders2.user_id WHERE users2.id = 1
+            auto selectStmt = std::make_unique<Xale::Query::SelectStatement>();
+            selectStmt->tableName = "users2";
+            selectStmt->columns.push_back(Xale::Query::Expression(Xale::Query::ExpressionType::Wildcard, "*"));
+            Xale::Query::JoinClause join;
+            join.tableName     = "orders2";
+            join.leftTableCol  = "users2.id";
+            join.rightTableCol = "orders2.user_id";
+            selectStmt->joins.push_back(join);
+
+            // WHERE users2.id = 1  (dotted column name)
+            auto cond = std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::BinaryOp);
+            auto binary = std::make_unique<Xale::Query::BinaryExpression>(
+                std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::Identifier, "users2.id"),
+                "=",
+                std::make_unique<Xale::Query::Expression>(Xale::Query::ExpressionType::NumericLiteral, "1")
+            );
+            cond->binary = std::move(binary);
+            selectStmt->where = std::make_unique<Xale::Query::WhereClause>(std::move(cond));
+
+            auto result = executor.execute(selectStmt.get());
+
+            bool success = result && result->getRowCount() == 1;
+
+            storage.shutdown();
+            return success;
+        }
+        catch (const Xale::Core::DbException&)
+        {
+            return false;
+        }
+    }
 }
 
 #endif // BASIC_EXECUTOR_TESTS_H
