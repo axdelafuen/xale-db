@@ -22,7 +22,7 @@ int main()
     auto& queryEngine = setup.getQueryEngine();
     Xale::Net::TcpServer server(queryEngine, std::move(socketFactory));
 
-    if (!server.start(8080)) {
+    if (!server.start(6767)) {
         logger.error("Failed to start the server");
         return -1;
     }

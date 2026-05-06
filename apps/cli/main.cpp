@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
         socketFactory = std::make_unique<Xale::Net::BasicSocketFactory>();
 
     auto tcpClient = Xale::Net::TcpClient(std::move(socketFactory));
-    if (!tcpClient.connect("127.0.0.1", 8080)) {
+    if (!tcpClient.connect("127.0.0.1", 6767)) {
         std::cerr << "Connection failed. Is the server running?" << std::endl;
         return -1;
     }
